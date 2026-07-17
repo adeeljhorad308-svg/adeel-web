@@ -1,0 +1,1027 @@
+// Adeel IT Solutions — Prisma schema.
+// Stage 5 §1 (schema), §7–§8 (auth/RBAC), plus the approved final improvements:
+// optimistic version locking, content version history with diffs, feature flags,
+// and background-job bookkeeping. Content models (Project, Service, Post, Lead, …)
+// are introduced in their respective phases; this Phase 0 foundation contains the
+// datasource, generator, enums, and the auth/RBAC/system/versioning tables that
+// later phases build upon.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ---------------------------------------------------------------------------
+// ENUMS
+// ---------------------------------------------------------------------------
+
+enum Role {
+  SUPER_ADMIN
+  ADMIN
+  DEVELOPER
+  SALES
+  ACCOUNTS
+  MARKETING
+  CONTENT_EDITOR
+  SUPPORT
+  VIEWER
+}
+
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
+  INVITED
+}
+
+enum Module {
+  DASHBOARD
+  PORTFOLIO
+  SERVICES
+  INDUSTRIES
+  TEAM
+  TESTIMONIALS
+  BLOG
+  CONTACTS
+  CRM
+  MEDIA
+  THEME
+  NAVIGATION
+  FOOTER
+  SEO
+  USERS
+  NOTIFICATIONS
+  SETTINGS
+  ACTIVITY
+  SEARCH
+}
+
+enum PermissionAction {
+  VIEW
+  CREATE
+  EDIT
+  DELETE
+}
+
+enum ContentStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum NotificationType {
+  LEAD
+  CONTACT
+  PROJECT
+  SYSTEM
+  SECURITY
+  UPDATE
+}
+
+enum VerificationTokenType {
+  EMAIL_VERIFICATION
+  PASSWORD_RESET
+  INVITE
+}
+
+enum VersionedEntity {
+  PROJECT
+  SERVICE
+  INDUSTRY
+  POST
+  LEGAL_DOCUMENT
+  SETTINGS
+}
+
+enum MediaType {
+  IMAGE
+  VIDEO
+  PDF
+  DOCUMENT
+  SVG
+}
+
+enum NavigationContext {
+  HEADER
+  FOOTER
+}
+
+enum LinkType {
+  INTERNAL
+  EXTERNAL
+}
+
+enum PostStatus {
+  DRAFT
+  PUBLISHED
+  SCHEDULED
+}
+
+enum ContactReplyStatus {
+  NEW
+  REPLIED
+  CLOSED
+}
+
+enum LeadStatus {
+  NEW
+  CONTACTED
+  PROPOSAL_SENT
+  WON
+  LOST
+}
+
+enum LeadPriority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum NewsletterStatus {
+  PENDING
+  CONFIRMED
+  UNSUBSCRIBED
+}
+
+// ---------------------------------------------------------------------------
+// AUTH & USERS (Auth.js database sessions — Stage 5 §7)
+// ---------------------------------------------------------------------------
+
+model User {
+  id                String     @id @default(cuid())
+  name              String?
+  email             String     @unique
+  emailVerified     DateTime?
+  passwordHash      String?
+  role              Role       @default(VIEWER)
+  status            UserStatus @default(INVITED)
+  avatarId          String?
+  twoFactorEnabled  Boolean    @default(false)
+  twoFactorSecret   String? // encrypted at rest
+  lastLoginAt       DateTime?
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
+
+  accounts          Account[]
+  sessions          Session[]
+  activityLogs      ActivityLog[]  @relation("ActivityActor")
+  notifications     Notification[] @relation("NotificationTarget")
+  contentVersions   ContentVersion[] @relation("VersionAuthor")
+  posts             Post[]         @relation("PostAuthor")
+  assignedContacts  ContactRequest[] @relation("ContactAssignee")
+  assignedLeads     Lead[]         @relation("LeadAssignee")
+  notes             Note[]         @relation("NoteAuthor")
+
+  @@index([role])
+  @@index([status])
+}
+
+// Auth.js OAuth account linkage (retained for future providers; credentials flow
+// does not create Account rows but the adapter requires the model).
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  ip           String?
+  userAgent    String?
+  createdAt    DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+// Multi-purpose, single-use, expiring tokens (verify email, reset password, invite).
+model VerificationToken {
+  id         String                @id @default(cuid())
+  identifier String // usually the user email
+  tokenHash  String                @unique // token is hashed at rest
+  type       VerificationTokenType
+  expires    DateTime
+  createdAt  DateTime              @default(now())
+
+  @@index([identifier])
+}
+
+// Optional RBAC override layer. Absence of a row means "use the seeded default
+// for this role" (Stage 5 §8). Super Admin can write overrides via the Users module.
+model RolePermission {
+  id      String           @id @default(cuid())
+  role    Role
+  module  Module
+  action  PermissionAction
+  allowed Boolean
+
+  @@unique([role, module, action])
+  @@index([role])
+}
+
+// ---------------------------------------------------------------------------
+// SYSTEM: activity log, notifications, versioning, feature flags, jobs, backups
+// ---------------------------------------------------------------------------
+
+// Append-only audit trail (Stage 5 §13; Master Spec activity logging).
+model ActivityLog {
+  id         String   @id @default(cuid())
+  actorId    String?
+  action     String // e.g. "portfolio.project.publish"
+  targetType String?
+  targetId   String?
+  metadata   Json?
+  ip         String?
+  createdAt  DateTime @default(now())
+
+  actor User? @relation("ActivityActor", fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([actorId])
+  @@index([action])
+  @@index([createdAt])
+  @@index([targetType, targetId])
+}
+
+model Notification {
+  id           String           @id @default(cuid())
+  type         NotificationType
+  title        String
+  body         String?
+  link         String?
+  targetUserId String?
+  targetRole   Role?
+  readAt       DateTime?
+  createdAt    DateTime         @default(now())
+
+  targetUser User? @relation("NotificationTarget", fields: [targetUserId], references: [id], onDelete: Cascade)
+
+  @@index([targetUserId])
+  @@index([targetRole])
+  @@index([readAt])
+  @@index([createdAt])
+}
+
+// Content version history with full snapshots for diffing + rollback
+// (Stage 5 improvement). `versionNo` increments per entity instance.
+model ContentVersion {
+  id         String          @id @default(cuid())
+  entity     VersionedEntity
+  entityId   String
+  versionNo  Int
+  snapshot   Json
+  authorId   String?
+  createdAt  DateTime        @default(now())
+
+  author User? @relation("VersionAuthor", fields: [authorId], references: [id], onDelete: SetNull)
+
+  @@unique([entity, entityId, versionNo])
+  @@index([entity, entityId])
+  @@index([authorId])
+}
+
+// Feature flags so future modules can be toggled without a deploy
+// (Stage 5 improvement). Seeded defaults ship disabled for unbuilt modules.
+model FeatureFlag {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  description String?
+  enabled     Boolean  @default(false)
+  updatedAt   DateTime @updatedAt
+
+  @@index([enabled])
+}
+
+// Bookkeeping for backups (Stage 5 §14). Actual backup execution runs as a job.
+model Backup {
+  id        String   @id @default(cuid())
+  type      String // AUTO | MANUAL
+  status    String // PENDING | COMPLETED | FAILED | VERIFIED
+  location  String?
+  sizeBytes BigInt? // NOTE: BigInt cannot cross the Server->Client Component
+  // props boundary (Next.js RSC serialization does not support it) or be
+  // JSON.stringify'd directly. Any admin UI built on this field must convert
+  // it to a Number (safe for realistic file sizes) or String before passing
+  // it to a Client Component or returning it from a Server Action.
+  checksum  String?
+  createdAt DateTime @default(now())
+  verifiedAt DateTime?
+
+  @@index([type])
+  @@index([status])
+  @@index([createdAt])
+}
+
+// ---------------------------------------------------------------------------
+// PHASE 2 — MEDIA LIBRARY (Stage 4 §10, Stage 5 §9)
+// ---------------------------------------------------------------------------
+
+model MediaFolder {
+  id        String   @id @default(cuid())
+  name      String
+  parentId  String?
+  createdAt DateTime @default(now())
+
+  parent   MediaFolder?  @relation("FolderChildren", fields: [parentId], references: [id], onDelete: Cascade)
+  children MediaFolder[] @relation("FolderChildren")
+  media    Media[]
+
+  @@index([parentId])
+}
+
+model Media {
+  id             String     @id @default(cuid())
+  url            String
+  publicId       String     @unique // Cloudinary public id
+  type           MediaType
+  mimeType       String
+  sizeBytes      Int
+  width          Int?
+  height         Int?
+  altText        String?
+  folderId       String?
+  uploadedById   String?
+  createdAt      DateTime   @default(now())
+
+  folder MediaFolder? @relation(fields: [folderId], references: [id], onDelete: SetNull)
+  projectUsages ProjectMedia[]
+
+  @@index([folderId])
+  @@index([type])
+  @@index([createdAt])
+}
+
+// ---------------------------------------------------------------------------
+// PHASE 2 — SETTINGS, THEME, NAVIGATION, FOOTER (Stage 4 §11–§14, §17)
+// ---------------------------------------------------------------------------
+
+// Grouped key/value settings store. Non-secret values only — secrets stay in env
+// (Stage 5 §16). `group` namespaces related keys (company, social, analytics…).
+model Setting {
+  id        String   @id @default(cuid())
+  group     String // e.g. "company", "social", "analytics", "integrations"
+  key       String
+  value     Json
+  updatedAt DateTime @updatedAt
+
+  @@unique([group, key])
+  @@index([group])
+}
+
+// Single-row theme configuration (Stage 1 token bridge, Stage 4 §11). Stores
+// semantic token overrides so the Theme Manager can re-theme without a rebuild.
+model ThemeConfig {
+  id            String   @id @default(cuid())
+  tokensLight   Json // semantic color tokens, light mode
+  tokensDark    Json // semantic color tokens, dark mode
+  fontDisplay   String   @default("Space Grotesk")
+  fontBody      String   @default("Inter")
+  fontMono      String   @default("JetBrains Mono")
+  defaultMode   String   @default("system") // light | dark | system
+  logoPrimaryId String?
+  logoWhiteId   String?
+  logoDarkId    String?
+  faviconId     String?
+  updatedAt     DateTime @updatedAt
+}
+
+model NavigationMenu {
+  id      String            @id @default(cuid())
+  context NavigationContext
+  name    String
+
+  items NavigationItem[]
+
+  @@unique([context, name])
+}
+
+model NavigationItem {
+  id       String   @id @default(cuid())
+  menuId   String
+  label    String
+  type     LinkType
+  href     String // internal path or external URL
+  iconKey  String?
+  parentId String?
+  order    Int      @default(0)
+  visible  Boolean  @default(true)
+
+  menu     NavigationMenu   @relation(fields: [menuId], references: [id], onDelete: Cascade)
+  parent   NavigationItem?  @relation("NavItemChildren", fields: [parentId], references: [id], onDelete: Cascade)
+  children NavigationItem[] @relation("NavItemChildren")
+
+  @@index([menuId])
+  @@index([parentId])
+}
+
+// Single-row footer configuration (Stage 4 §13). Column/link structure kept as
+// JSON since its shape (columns of links) is display config, not relational data.
+model FooterConfig {
+  id          String   @id @default(cuid())
+  columns     Json // [{ title, links: [{label, href}] }]
+  copyright   String?
+  showNewsletter Boolean @default(true)
+  updatedAt   DateTime @updatedAt
+}
+
+// ---------------------------------------------------------------------------
+// PHASE 2 — SERVICES (Stage 4 §4, Stage 3 Pages 1–2)
+// ---------------------------------------------------------------------------
+
+model ServiceCategory {
+  id    String    @id @default(cuid())
+  name  String
+  slug  String    @unique
+  order Int       @default(0)
+
+  services Service[]
+}
+
+model Service {
+  id               String        @id @default(cuid())
+  name             String
+  slug             String        @unique
+  categoryId       String?
+  iconKey          String
+  shortBenefit     String
+  descriptionRich  String // sanitized HTML
+  pricingAmount    Int?
+  pricingLabel     String?
+  pricingPeriod    String?
+  order            Int           @default(0)
+  visible          Boolean       @default(true)
+  seoTitle         String?
+  seoDescription   String?
+  ogImageId        String?
+  quickFormEnabled Boolean       @default(false)
+  version          Int           @default(1) // optimistic concurrency (Stage 5 improvement)
+  deletedAt        DateTime?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  category    ServiceCategory?   @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  features    ServiceFeature[]
+  benefits    ServiceBenefit[]
+  processSteps ServiceProcessStep[]
+  faqs        ServiceFaq[]
+  technologies ServiceTechnology[]
+  industryMappings IndustrySolutionMapping[]
+
+  @@index([categoryId])
+  @@index([visible, order])
+  @@index([slug])
+}
+
+model ServiceFeature {
+  id        String  @id @default(cuid())
+  serviceId String
+  label     String
+  order     Int     @default(0)
+
+  service Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  @@index([serviceId])
+}
+
+model ServiceBenefit {
+  id        String  @id @default(cuid())
+  serviceId String
+  iconKey   String
+  claim     String
+  proof     String?
+  order     Int     @default(0)
+
+  service Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  @@index([serviceId])
+}
+
+model ServiceProcessStep {
+  id        String  @id @default(cuid())
+  serviceId String
+  title     String
+  body      String
+  order     Int     @default(0)
+
+  service Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  @@index([serviceId])
+}
+
+model ServiceFaq {
+  id        String  @id @default(cuid())
+  serviceId String
+  question  String
+  answer    String // sanitized HTML
+  order     Int     @default(0)
+
+  service Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  @@index([serviceId])
+}
+
+// ---------------------------------------------------------------------------
+// PHASE 2 — INDUSTRIES (Stage 3 Pages 3–4)
+// ---------------------------------------------------------------------------
+
+model Industry {
+  id             String    @id @default(cuid())
+  name           String
+  slug           String    @unique
+  iconKey        String
+  tagline        String?
+  heroImageId    String?
+  order          Int       @default(0)
+  visible        Boolean   @default(true)
+  seoTitle       String?
+  seoDescription String?
+  version        Int       @default(1)
+  deletedAt      DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  challenges       IndustryChallenge[]
+  solutionMappings IndustrySolutionMapping[]
+  faqs             IndustryFaq[]
+
+  @@index([visible, order])
+  @@index([slug])
+}
+
+model IndustryChallenge {
+  id         String @id @default(cuid())
+  industryId String
+  iconKey    String
+  label      String
+  order      Int    @default(0)
+
+  industry Industry @relation(fields: [industryId], references: [id], onDelete: Cascade)
+
+  @@index([industryId])
+}
+
+model IndustrySolutionMapping {
+  id         String  @id @default(cuid())
+  industryId String
+  serviceId  String
+  label      String?
+  order      Int     @default(0)
+
+  industry Industry @relation(fields: [industryId], references: [id], onDelete: Cascade)
+  service  Service  @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  @@index([industryId])
+  @@index([serviceId])
+}
+
+model IndustryFaq {
+  id         String @id @default(cuid())
+  industryId String
+  question   String
+  answer     String
+  order      Int    @default(0)
+
+  industry Industry @relation(fields: [industryId], references: [id], onDelete: Cascade)
+
+  @@index([industryId])
+}
+
+// ---------------------------------------------------------------------------
+// PHASE 2 — PORTFOLIO (Stage 4 §3, Stage 3 Pages 5–6)
+// ---------------------------------------------------------------------------
+
+model ProjectCategory {
+  id    String    @id @default(cuid())
+  name  String
+  slug  String    @unique
+  order Int       @default(0)
+
+  projects Project[]
+}
+
+model Technology {
+  id      String  @id @default(cuid())
+  name    String
+  slug    String  @unique
+  logoId  String?
+  group   String? // FRONTEND | BACKEND | CLOUD | ...
+
+  projects ProjectTechnology[]
+  services ServiceTechnology[]
+}
+
+model Project {
+  id             String        @id @default(cuid())
+  title          String
+  slug           String        @unique
+  clientName     String?
+  categoryId     String?
+  completionDate DateTime?
+  status         ContentStatus @default(DRAFT)
+  featured       Boolean       @default(false)
+  order          Int           @default(0)
+  liveUrl        String?
+  githubUrl      String?
+  overview       String?
+  seoTitle       String?
+  seoDescription String?
+  ogImageId      String?
+  testimonialId  String?
+  nextProjectId  String?
+  version        Int           @default(1)
+  deletedAt      DateTime?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  category     ProjectCategory?      @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  technologies ProjectTechnology[]
+  narratives   ProjectNarrative[]
+  metrics      ProjectMetric[]
+  media        ProjectMedia[]
+  testimonial  Testimonial?          @relation(fields: [testimonialId], references: [id], onDelete: SetNull)
+  // Self-relation: "next project" is a one-directional pointer (a suggested
+  // continuation), not a reverse list — no back-reference field is needed.
+  nextProject  Project?              @relation("ProjectNext", fields: [nextProjectId], references: [id], onDelete: SetNull)
+  suggestedBy  Project[]             @relation("ProjectNext")
+
+  @@index([status, order])
+  @@index([categoryId])
+  @@index([slug])
+  @@index([featured])
+  @@index([testimonialId])
+  @@index([nextProjectId])
+}
+
+model ProjectTechnology {
+  projectId    String
+  technologyId String
+
+  project    Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  technology Technology @relation(fields: [technologyId], references: [id], onDelete: Cascade)
+
+  @@id([projectId, technologyId])
+  @@index([technologyId])
+}
+
+model ServiceTechnology {
+  serviceId    String
+  technologyId String
+
+  service    Service    @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  technology Technology @relation(fields: [technologyId], references: [id], onDelete: Cascade)
+
+  @@id([serviceId, technologyId])
+  @@index([technologyId])
+}
+
+model ProjectNarrative {
+  id        String  @id @default(cuid())
+  projectId String
+  type      String // CHALLENGE | APPROACH | SOLUTION | OVERVIEW
+  bodyRich  String // sanitized HTML
+  order     Int     @default(0)
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+}
+
+model ProjectMetric {
+  id        String @id @default(cuid())
+  projectId String
+  label     String
+  value     String
+  order     Int    @default(0)
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+}
+
+model ProjectMedia {
+  id        String  @id @default(cuid())
+  projectId String
+  mediaId   String
+  isCover   Boolean @default(false)
+  order     Int     @default(0)
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  media   Media   @relation(fields: [mediaId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([mediaId])
+}
+
+// ---------------------------------------------------------------------------
+// PHASE 2 — TEAM (Stage 4 §5, Stage 3 Page 8)
+// ---------------------------------------------------------------------------
+
+model TeamMember {
+  id          String    @id @default(cuid())
+  name        String
+  designation String
+  bio         String?
+  experience  String?
+  photoId     String?
+  department  String?
+  order       Int       @default(0)
+  active      Boolean   @default(true)
+  version     Int       @default(1)
+  deletedAt   DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  skills      TeamMemberSkill[]
+  socialLinks SocialLink[]
+
+  @@index([active, order])
+}
+
+model TeamMemberSkill {
+  id           String @id @default(cuid())
+  teamMemberId String
+  label        String
+  order        Int    @default(0)
+
+  teamMember TeamMember @relation(fields: [teamMemberId], references: [id], onDelete: Cascade)
+
+  @@index([teamMemberId])
+}
+
+// Social links for either a team member or the global company (Stage 4 §13/§17).
+model SocialLink {
+  id           String  @id @default(cuid())
+  platform     String // github | linkedin | facebook | instagram | whatsapp | email | youtube | x | tiktok
+  url          String
+  visible      Boolean @default(true)
+  teamMemberId String?
+
+  teamMember TeamMember? @relation(fields: [teamMemberId], references: [id], onDelete: Cascade)
+
+  @@index([teamMemberId])
+}
+
+// ---------------------------------------------------------------------------
+// PHASE 2 — TESTIMONIALS (Stage 4 §6, Stage 2 §9)
+// ---------------------------------------------------------------------------
+
+model Testimonial {
+  id             String        @id @default(cuid())
+  clientName     String
+  company        String?
+  companyLogoId  String?
+  photoId        String?
+  country        String?
+  rating         Int // 1-5
+  reviewText     String
+  videoUrl       String?
+  status         ContentStatus @default(DRAFT)
+  order          Int           @default(0)
+  version        Int           @default(1)
+  deletedAt      DateTime?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  projects Project[]
+
+  @@index([status, order])
+}
+
+// ---------------------------------------------------------------------------
+// PHASE 3 — BLOG CMS (Stage 4 §7, Stage 3 Pages 9–10)
+// ---------------------------------------------------------------------------
+
+model PostCategory {
+  id    String @id @default(cuid())
+  name  String
+  slug  String @unique
+  order Int    @default(0)
+
+  posts Post[]
+}
+
+model Tag {
+  id   String @id @default(cuid())
+  name String
+  slug String @unique
+
+  posts PostTag[]
+}
+
+model Post {
+  id             String     @id @default(cuid())
+  title          String
+  slug           String     @unique
+  excerpt        String?
+  coverImageId   String?
+  contentRich    String // sanitized HTML
+  categoryId     String?
+  authorId       String?
+  status         PostStatus @default(DRAFT)
+  publishedAt    DateTime?
+  scheduledAt    DateTime?
+  readingTime    Int        @default(1) // minutes, auto-computed, override allowed
+  featured       Boolean    @default(false)
+  seoTitle       String?
+  seoDescription String?
+  ogImageId      String?
+  canonicalUrl   String?
+  version        Int        @default(1)
+  deletedAt      DateTime?
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+
+  category     PostCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  author       User?         @relation("PostAuthor", fields: [authorId], references: [id], onDelete: SetNull)
+  tags         PostTag[]
+  relatedTo    PostRelated[] @relation("PostRelatedFrom")
+  relatedFrom  PostRelated[] @relation("PostRelatedTo")
+
+  @@index([status, publishedAt])
+  @@index([categoryId])
+  @@index([slug])
+  @@index([featured])
+  @@index([scheduledAt])
+  @@index([authorId])
+}
+
+model PostTag {
+  postId String
+  tagId  String
+
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  tag  Tag  @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([postId, tagId])
+  @@index([tagId])
+}
+
+// Self-referential many-to-many for manually curated "related posts".
+model PostRelated {
+  postId        String
+  relatedPostId String
+
+  post        Post @relation("PostRelatedFrom", fields: [postId], references: [id], onDelete: Cascade)
+  relatedPost Post @relation("PostRelatedTo", fields: [relatedPostId], references: [id], onDelete: Cascade)
+
+  @@id([postId, relatedPostId])
+  @@index([relatedPostId])
+}
+
+// ---------------------------------------------------------------------------
+// PHASE 3 — FAQ (Stage 2 §10; shared by homepage + service/industry pages)
+// ---------------------------------------------------------------------------
+
+model GlobalFaq {
+  id       String  @id @default(cuid())
+  question String
+  answer   String // sanitized HTML
+  order    Int     @default(0)
+  visible  Boolean @default(true)
+
+  @@index([visible, order])
+}
+
+// ---------------------------------------------------------------------------
+// PHASE 3 — SEO MANAGER (Stage 4 §14)
+// ---------------------------------------------------------------------------
+
+// NOTE ON MEDIA REFERENCES: fields like `ogImageId`, `photoId`, `coverImageId`,
+// `logoId`, `heroImageId`, `companyLogoId`, `avatarId`, and `faviconId`
+// throughout this schema are intentionally plain `String?` references to
+// `Media.id`, NOT Prisma relations. Media is referenced from ~15 different
+// models for simple "pick one image" purposes; making every one a full
+// relation would require 15 reciprocal array fields on Media for no benefit,
+// since these are resolved via a single Media lookup, not a join query. This
+// is different from genuine content relationships (e.g. ProjectMedia,
+// ServiceTechnology, IndustrySolutionMapping) which ARE real relations because
+// the app needs to query/join through them. Do not "fix" these into relations.
+
+// Per-path SEO overrides. `pagePath` is the canonical route (e.g. "/services").
+// Falls back to GlobalSeoConfig defaults when no override exists for a path.
+model SeoOverride {
+  id             String   @id @default(cuid())
+  pagePath       String   @unique
+  title          String?
+  description    String?
+  ogImageId      String?
+  canonicalUrl   String?
+  noindex        Boolean  @default(false)
+  updatedAt      DateTime @updatedAt
+}
+
+model GlobalSeoConfig {
+  id              String   @id @default(cuid())
+  defaultTitle    String   @default("Adeel IT Solutions")
+  titleTemplate   String   @default("%s — Adeel IT Solutions")
+  defaultDescription String @default("")
+  defaultOgImageId String?
+  twitterHandle   String?
+  robotsExtra     String? // additional robots.txt directives
+  updatedAt       DateTime @updatedAt
+}
+
+// ---------------------------------------------------------------------------
+// PHASE 4 — CONTACT, CRM, NOTES, NEWSLETTER (Stage 4 §8–9, §16)
+// ---------------------------------------------------------------------------
+
+model ContactRequest {
+  id             String             @id @default(cuid())
+  name           String
+  email          String
+  company        String?
+  phone          String?
+  serviceInterest String?
+  budget         String?
+  message        String
+  replyStatus    ContactReplyStatus @default(NEW)
+  assignedUserId String?
+  ip             String?
+  createdAt      DateTime           @default(now())
+
+  assignedUser User?  @relation("ContactAssignee", fields: [assignedUserId], references: [id], onDelete: SetNull)
+  notes        Note[] @relation("ContactNotes")
+
+  @@index([replyStatus])
+  @@index([assignedUserId])
+  @@index([createdAt])
+}
+
+model Lead {
+  id            String       @id @default(cuid())
+  name          String
+  company       String?
+  email         String
+  phone         String?
+  country       String?
+  industry      String?
+  budget        String?
+  timeline      String?
+  source        String?
+  status        LeadStatus   @default(NEW)
+  priority      LeadPriority @default(MEDIUM)
+  assignedUserId String?
+  followUpDate  DateTime?
+  proposalSent  Boolean      @default(false)
+  lostReason    String?
+  order         Int          @default(0)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  assignedUser User? @relation("LeadAssignee", fields: [assignedUserId], references: [id], onDelete: SetNull)
+  notes        Note[] @relation("LeadNotes")
+
+  @@index([status])
+  @@index([priority])
+  @@index([assignedUserId])
+  @@index([followUpDate])
+}
+
+// Polymorphic note, attached to either a ContactRequest or a Lead.
+model Note {
+  id        String   @id @default(cuid())
+  body      String
+  authorId  String?
+  contactId String?
+  leadId    String?
+  createdAt DateTime @default(now())
+
+  author  User?           @relation("NoteAuthor", fields: [authorId], references: [id], onDelete: SetNull)
+  contact ContactRequest? @relation("ContactNotes", fields: [contactId], references: [id], onDelete: Cascade)
+  lead    Lead?           @relation("LeadNotes", fields: [leadId], references: [id], onDelete: Cascade)
+
+  @@index([contactId])
+  @@index([leadId])
+  @@index([authorId])
+}
+
+model NewsletterSubscriber {
+  id          String           @id @default(cuid())
+  email       String           @unique
+  status      NewsletterStatus @default(PENDING)
+  confirmedAt DateTime?
+  createdAt   DateTime         @default(now())
+
+  @@index([status])
+}

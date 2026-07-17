@@ -1,0 +1,32 @@
+{
+  "common": {
+    "appName": "Adeel IT Solutions",
+    "loading": "Loading",
+    "retry": "Try again",
+    "save": "Save changes",
+    "cancel": "Cancel",
+    "delete": "Delete"
+  },
+  "nav": {
+    "home": "Home",
+    "services": "Services",
+    "industries": "Industries",
+    "work": "Work",
+    "about": "About",
+    "blog": "Blog",
+    "contact": "Contact"
+  },
+  "cta": {
+    "startProject": "Start your project",
+    "viewWork": "View our work"
+  },
+  "errors": {
+    "generic": "Something went wrong. Please try again.",
+    "notFound": "This page doesn't exist.",
+    "forbidden": "You don't have access to this page.",
+    "unauthorized": "You need to sign in to continue.",
+    "serverError": "Something went wrong on our end.",
+    "maintenance": "We'll be right back.",
+    "offline": "You're offline."
+  }
+}
