@@ -51,8 +51,7 @@ export function toFieldErrors(error: z.ZodError): FieldErrors {
 /** Parse input against a schema, throwing a typed ValidationError on failure. */
 export function parseOrThrow<T extends z.ZodTypeAny>(schema: T, input: unknown): z.infer<T> {
   try {
-    const result: z.infer<T> = schema.parse(input);
-    return result;
+    return schema.parse(input) as unknown as z.infer<T>;
   } catch (error) {
     if (error instanceof z.ZodError) {
       throw new ValidationError('Some fields need your attention.', toFieldErrors(error));
