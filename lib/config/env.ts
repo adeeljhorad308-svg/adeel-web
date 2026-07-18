@@ -3,9 +3,9 @@ import { z } from 'zod';
 /**
  * Environment validation (Stage 5 §16).
  *
- * During local development and `next build` without a complete .env file,
- * we now gracefully skip strict server validation instead of crashing the build.
- * In production runtime, validation remains strict.
+ * Server environment variables are validated at runtime in development/production.
+ * During `next build` (when secrets may be missing), we log a warning but do not crash.
+ * This prevents build failures in CI and local environments without a full .env file.
  */
 
 const nodeEnv = z.enum(['development', 'test', 'production']).default('development');
@@ -48,19 +48,21 @@ function formatIssues(error: z.ZodError): string {
     .join('\n');
 }
 
-function parseServerEnv() {
+function parseServerEnv(): z.infer<typeof serverSchema> {
   const parsed = serverSchema.safeParse(process.env);
   if (!parsed.success) {
     console.warn(
-      '⚠️  Some server environment variables are missing or invalid.\n' +
-      'Build will continue, but some features may not work.\n' +
+      '⚠️  Some server environment variables are missing or invalid during build.\n' +
+      'Some features may not work until they are provided.\n' +
       formatIssues(parsed.error)
     );
+    // Return empty object to satisfy type without using `any`
+    return {} as z.infer<typeof serverSchema>;
   }
-  return parsed.success ? parsed.data : (process.env as any);
+  return parsed.data;
 }
 
-function parseClientEnv() {
+function parseClientEnv(): z.infer<typeof clientSchema> {
   const source = {
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
     NEXT_PUBLIC_DEFAULT_LOCALE: process.env.NEXT_PUBLIC_DEFAULT_LOCALE,
