@@ -3,6 +3,10 @@ import Link from 'next/link';
 import { resolveMetadata } from '@/lib/services/seo-service';
 import { getPublicIndustries } from '@/lib/services/public-content-service';
 
+// Reads live CMS data (industries) on every request — must not be statically
+// prerendered at build time.
+export const dynamic = 'force-dynamic';
+
 export async function generateMetadata(): Promise<Metadata> {
   const r = await resolveMetadata('/industries');
   return { title: r.title, description: r.description || undefined };

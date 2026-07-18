@@ -4,6 +4,10 @@ import Image from 'next/image';
 import { resolveMetadata } from '@/lib/services/seo-service';
 import { getPublicProjects } from '@/lib/services/public-content-service';
 
+// Reads live CMS data (portfolio projects) on every request — must not be
+// statically prerendered at build time.
+export const dynamic = 'force-dynamic';
+
 export async function generateMetadata(): Promise<Metadata> {
   const r = await resolveMetadata('/work');
   return { title: r.title, description: r.description || undefined };

@@ -3,6 +3,10 @@ import { resolveMetadata } from '@/lib/services/seo-service';
 import { getCompanySettingsPublic } from '@/lib/services/public-content-service';
 import { ContactForm } from '@/components/public/contact-form';
 
+// Reads live CMS data (company settings) on every request — must not be
+// statically prerendered at build time.
+export const dynamic = 'force-dynamic';
+
 export async function generateMetadata(): Promise<Metadata> {
   const resolved = await resolveMetadata('/contact');
   return { title: resolved.title, description: resolved.description || undefined };

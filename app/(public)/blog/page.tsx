@@ -3,6 +3,10 @@ import Link from 'next/link';
 import { resolveMetadata } from '@/lib/services/seo-service';
 import { getPublicPosts } from '@/lib/services/public-content-service';
 
+// Reads live CMS data (published posts) on every request — must not be
+// statically prerendered at build time.
+export const dynamic = 'force-dynamic';
+
 export async function generateMetadata(): Promise<Metadata> {
   const r = await resolveMetadata('/blog');
   return { title: r.title, description: r.description || undefined };

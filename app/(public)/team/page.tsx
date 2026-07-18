@@ -2,6 +2,10 @@ import type { Metadata } from 'next';
 import { resolveMetadata } from '@/lib/services/seo-service';
 import { getPublicTeam } from '@/lib/services/public-content-service';
 
+// Reads live CMS data (team members) on every request — must not be
+// statically prerendered at build time.
+export const dynamic = 'force-dynamic';
+
 export async function generateMetadata(): Promise<Metadata> {
   const r = await resolveMetadata('/team');
   return { title: r.title, description: r.description || undefined };
