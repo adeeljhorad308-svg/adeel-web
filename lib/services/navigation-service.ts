@@ -18,7 +18,14 @@ import type { NavigationMenu, NavigationItem } from '@prisma/client';
  */
 
 const KNOWN_INTERNAL_PREFIXES = [
-  '/', '/services', '/industries', '/work', '/about', '/team', '/blog', '/contact',
+  '/',
+  '/services',
+  '/industries',
+  '/work',
+  '/about',
+  '/team',
+  '/blog',
+  '/contact',
 ];
 
 function validateInternalHref(href: string): boolean {
@@ -84,7 +91,12 @@ export async function saveNavigationMenu(
       }
 
       await recordActivity(
-        { actorId: user.id, action: 'navigation.update', targetType: 'NavigationMenu', targetId: menu.id },
+        {
+          actorId: user.id,
+          action: 'navigation.update',
+          targetType: 'NavigationMenu',
+          targetId: menu.id,
+        },
         tx,
       );
 

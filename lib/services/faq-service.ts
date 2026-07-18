@@ -60,7 +60,12 @@ export async function deleteFaq(id: string): Promise<ActionResult<{ deleted: tru
   try {
     const user = await requirePermission('SETTINGS', 'DELETE');
     await prisma.globalFaq.delete({ where: { id } });
-    await recordActivity({ actorId: user.id, action: 'faq.delete', targetType: 'GlobalFaq', targetId: id });
+    await recordActivity({
+      actorId: user.id,
+      action: 'faq.delete',
+      targetType: 'GlobalFaq',
+      targetId: id,
+    });
     return { ok: true, data: { deleted: true } };
   } catch (error) {
     return toActionError(error);

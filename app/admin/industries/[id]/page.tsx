@@ -5,7 +5,10 @@ import { getIndustry } from '@/lib/actions/industries-actions';
 import { PageHeader } from '@/components/admin/page-primitives';
 import { IndustryEditorForm } from '@/components/admin/industry-editor-form';
 
-export const metadata: Metadata = { title: 'Edit industry', robots: { index: false, follow: false } };
+export const metadata: Metadata = {
+  title: 'Edit industry',
+  robots: { index: false, follow: false },
+};
 
 export default async function EditIndustryPage({
   params,

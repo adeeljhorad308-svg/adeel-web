@@ -13,16 +13,34 @@ export default async function WorkPage(): Promise<React.ReactElement> {
   const { items } = await getPublicProjects(1, 12);
   return (
     <main id="main-content" className="mx-auto max-w-content-xl px-5 py-24 lg:px-8">
-      <h1 className="font-display text-h1 font-bold text-[color:var(--color-text-primary)]">Our work</h1>
+      <h1 className="font-display text-h1 font-bold text-[color:var(--color-text-primary)]">
+        Our work
+      </h1>
       <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2">
         {items.map((p) => {
           const cover = p.media.find((m) => m.isCover) ?? p.media[0];
           return (
-            <Link key={p.id} href={`/work/${p.slug}`} className="overflow-hidden rounded-lg border border-[color:var(--color-border-default)] bg-[color:var(--color-bg-surface)]">
+            <Link
+              key={p.id}
+              href={`/work/${p.slug}`}
+              className="overflow-hidden rounded-lg border border-[color:var(--color-border-default)] bg-[color:var(--color-bg-surface)]"
+            >
               <div className="relative aspect-video bg-[color:var(--color-bg-subtle)]">
-                {cover && <Image src={cover.media.url} alt={cover.media.altText ?? p.title} fill sizes="50vw" className="object-cover" />}
+                {cover && (
+                  <Image
+                    src={cover.media.url}
+                    alt={cover.media.altText ?? p.title}
+                    fill
+                    sizes="50vw"
+                    className="object-cover"
+                  />
+                )}
               </div>
-              <div className="p-5"><h2 className="text-h4 font-semibold text-[color:var(--color-text-primary)]">{p.title}</h2></div>
+              <div className="p-5">
+                <h2 className="text-h4 font-semibold text-[color:var(--color-text-primary)]">
+                  {p.title}
+                </h2>
+              </div>
             </Link>
           );
         })}

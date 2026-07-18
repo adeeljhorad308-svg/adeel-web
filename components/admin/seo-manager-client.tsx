@@ -64,7 +64,8 @@ export function SeoManagerClient({
   function handleDelete(): void {
     if (!pendingDelete) return;
     void deleteSeoOverride(pendingDelete.pagePath).then((result) => {
-      if (result.ok) setOverrides((prev) => prev.filter((o) => o.pagePath !== pendingDelete.pagePath));
+      if (result.ok)
+        setOverrides((prev) => prev.filter((o) => o.pagePath !== pendingDelete.pagePath));
       setPendingDelete(null);
     });
   }
@@ -72,12 +73,26 @@ export function SeoManagerClient({
   return (
     <div className="flex flex-col gap-10">
       <section>
-        <h2 className="font-display text-h4 font-bold text-[color:var(--color-text-primary)]">Global defaults</h2>
-        <form onSubmit={(e) => void handleSubmit(onSubmitGlobal)(e)} className="mt-4 flex max-w-xl flex-col gap-4">
+        <h2 className="font-display text-h4 font-bold text-[color:var(--color-text-primary)]">
+          Global defaults
+        </h2>
+        <form
+          onSubmit={(e) => void handleSubmit(onSubmitGlobal)(e)}
+          className="mt-4 flex max-w-xl flex-col gap-4"
+        >
           {saved && <Alert tone="success">Global SEO settings saved.</Alert>}
           <FormField label="Default title" required {...register('defaultTitle')} />
-          <FormField label="Title template" hint="Use %s as the page-title placeholder." required {...register('titleTemplate')} />
-          <FormField label="Default description" hint="Max 160 characters." {...register('defaultDescription')} />
+          <FormField
+            label="Title template"
+            hint="Use %s as the page-title placeholder."
+            required
+            {...register('titleTemplate')}
+          />
+          <FormField
+            label="Default description"
+            hint="Max 160 characters."
+            {...register('defaultDescription')}
+          />
           <FormField label="Twitter handle" {...register('twitterHandle')} />
           <FormField label="Additional robots.txt directives" {...register('robotsExtra')} />
           <Button type="submit" loading={submitting} className="w-fit">
@@ -87,12 +102,19 @@ export function SeoManagerClient({
       </section>
 
       <section>
-        <h2 className="font-display text-h4 font-bold text-[color:var(--color-text-primary)]">Per-page overrides</h2>
+        <h2 className="font-display text-h4 font-bold text-[color:var(--color-text-primary)]">
+          Per-page overrides
+        </h2>
         <div className="mt-4 flex flex-col gap-3">
           {overrides.map((override) => (
-            <div key={override.pagePath} className="rounded-lg border border-[color:var(--color-border-default)] bg-[color:var(--color-bg-surface)] p-4">
+            <div
+              key={override.pagePath}
+              className="rounded-lg border border-[color:var(--color-border-default)] bg-[color:var(--color-bg-surface)] p-4"
+            >
               <div className="flex items-center justify-between">
-                <p className="font-mono text-small font-semibold text-[color:var(--color-text-primary)]">{override.pagePath}</p>
+                <p className="font-mono text-small font-semibold text-[color:var(--color-text-primary)]">
+                  {override.pagePath}
+                </p>
                 <button
                   onClick={() => setPendingDelete(override)}
                   aria-label={`Remove override for ${override.pagePath}`}

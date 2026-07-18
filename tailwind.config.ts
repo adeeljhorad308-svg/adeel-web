@@ -26,11 +26,7 @@ const semanticColorUtilities = Object.fromEntries(
 
 const config: Config = {
   darkMode: 'class',
-  content: [
-    './app/**/*.{ts,tsx}',
-    './components/**/*.{ts,tsx}',
-    './lib/**/*.{ts,tsx}',
-  ],
+  content: ['./app/**/*.{ts,tsx}', './components/**/*.{ts,tsx}', './lib/**/*.{ts,tsx}'],
   theme: {
     screens: {
       xs: breakpoints.xs,
@@ -51,7 +47,10 @@ const config: Config = {
       },
       spacing: primitives.space,
       borderRadius: primitives.radius,
-      fontSize: primitives.fontSize as unknown as Record<string, [string, { lineHeight: string; letterSpacing?: string }]>,
+      fontSize: primitives.fontSize as unknown as Record<
+        string,
+        [string, { lineHeight: string; letterSpacing?: string }]
+      >,
       fontWeight: primitives.fontWeight,
       fontFamily: {
         display: ['var(--font-space-grotesk)', 'ui-sans-serif', 'system-ui', 'sans-serif'],

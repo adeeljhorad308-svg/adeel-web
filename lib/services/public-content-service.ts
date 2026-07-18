@@ -1,5 +1,6 @@
 import 'server-only';
 import { prisma } from '@/lib/db/prisma';
+import { logger } from '@/lib/logging/logger';
 
 /**
  * Public content service (Stage 3 homepage + pages).
@@ -117,7 +118,11 @@ export async function getPublicPosts(page = 1, pageSize = 9) {
       orderBy: { publishedAt: 'desc' },
       skip: (page - 1) * pageSize,
       take: pageSize,
-      include: { category: true, tags: { include: { tag: true } }, author: { select: { name: true } } },
+      include: {
+        category: true,
+        tags: { include: { tag: true } },
+        author: { select: { name: true } },
+      },
     }),
     prisma.post.count({ where }),
   ]);
@@ -150,18 +155,32 @@ export async function getCompanySettingsPublic(): Promise<Record<string, unknown
 }
 
 export async function getSocialLinksPublic(): Promise<Array<{ platform: string; url: string }>> {
-  const row = await prisma.setting.findUnique({ where: { group_key: { group: 'social', key: 'links' } } });
-  const links = (row?.value as Array<{ platform: string; url: string; visible: boolean }> | undefined) ?? [];
+  const row = await prisma.setting.findUnique({
+    where: { group_key: { group: 'social', key: 'links' } },
+  });
+  const links =
+    (row?.value as Array<{ platform: string; url: string; visible: boolean }> | undefined) ?? [];
   // Hard filter: hidden or empty-URL entries never reach the public site
   // (Stage 2/3 contract — every social icon opens the correct URL, or is absent).
   return links.filter((l) => l.visible && l.url.trim() !== '');
 }
 
-export async function getAnalyticsSettingsPublic(): Promise<{ gaId?: string | undefined; gtmId?: string | undefined }> {
-  const rows = await prisma.setting.findMany({ where: { group: 'analytics' } });
-  const map = Object.fromEntries(rows.map((r) => [r.key, r.value])) as Record<string, unknown>;
-  return {
-    gaId: typeof map.gaId === 'string' ? map.gaId : undefined,
-    gtmId: typeof map.gtmId === 'string' ? map.gtmId : undefined,
-  };
+export async function getAnalyticsSettingsPublic(): Promise<{
+  gaId?: string | undefined;
+  gtmId?: string | undefined;
+}> {
+  // This is called from the root layout, so it runs on every single page
+  // (including the error and not-found pages). A transient database outage
+  // must not take the whole site down over optional analytics IDs.
+  try {
+    const rows = await prisma.setting.findMany({ where: { group: 'analytics' } });
+    const map = Object.fromEntries(rows.map((r) => [r.key, r.value])) as Record<string, unknown>;
+    return {
+      gaId: typeof map.gaId === 'string' ? map.gaId : undefined,
+      gtmId: typeof map.gtmId === 'string' ? map.gtmId : undefined,
+    };
+  } catch (error) {
+    logger.error({ err: error }, 'Failed to load analytics settings; continuing without them');
+    return {};
+  }
 }

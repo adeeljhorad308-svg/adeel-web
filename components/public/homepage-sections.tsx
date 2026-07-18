@@ -25,11 +25,7 @@ type Projects = Awaited<ReturnType<typeof getFeaturedProjects>>;
 type Testimonials = Awaited<ReturnType<typeof getPublicTestimonials>>;
 type Faqs = Awaited<ReturnType<typeof getPublicFaqs>>;
 
-export function HeroSection({
-  companyName,
-}: {
-  companyName: string;
-}): React.ReactElement {
+export function HeroSection({ companyName }: { companyName: string }): React.ReactElement {
   return (
     <section className="relative overflow-hidden pt-24 sm:pt-32">
       <div className="mx-auto grid max-w-content-xl grid-cols-1 gap-10 px-5 lg:grid-cols-12 lg:items-center lg:gap-8 lg:px-8">
@@ -93,7 +89,9 @@ export function ServicesSection({ services }: { services: Services }): React.Rea
     <section className="py-24">
       <div className="mx-auto max-w-content-xl px-5 lg:px-8">
         <div className="max-w-2xl">
-          <h2 className="font-display text-h2 font-bold text-[color:var(--color-text-primary)]">Services</h2>
+          <h2 className="font-display text-h2 font-bold text-[color:var(--color-text-primary)]">
+            Services
+          </h2>
           <p className="mt-3 text-body-lg text-[color:var(--color-text-muted)]">
             End-to-end software development for businesses of every size.
           </p>
@@ -111,7 +109,9 @@ export function ServicesSection({ services }: { services: Services }): React.Rea
               <h3 className="mt-4 text-h4 font-semibold text-[color:var(--color-text-primary)] group-hover:text-[color:var(--color-brand-primary)]">
                 {service.name}
               </h3>
-              <p className="mt-2 text-small text-[color:var(--color-text-muted)]">{service.shortBenefit}</p>
+              <p className="mt-2 text-small text-[color:var(--color-text-muted)]">
+                {service.shortBenefit}
+              </p>
             </Link>
           ))}
         </div>
@@ -120,12 +120,18 @@ export function ServicesSection({ services }: { services: Services }): React.Rea
   );
 }
 
-export function IndustriesSection({ industries }: { industries: Industries }): React.ReactElement | null {
+export function IndustriesSection({
+  industries,
+}: {
+  industries: Industries;
+}): React.ReactElement | null {
   if (industries.length === 0) return null;
   return (
     <section className="bg-[color:var(--color-bg-subtle)] py-24">
       <div className="mx-auto max-w-content-xl px-5 lg:px-8">
-        <h2 className="font-display text-h2 font-bold text-[color:var(--color-text-primary)]">Industries we serve</h2>
+        <h2 className="font-display text-h2 font-bold text-[color:var(--color-text-primary)]">
+          Industries we serve
+        </h2>
         <div className="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
           {industries.map((industry) => (
             <Link
@@ -144,14 +150,23 @@ export function IndustriesSection({ industries }: { industries: Industries }): R
   );
 }
 
-export function FeaturedWorkSection({ projects }: { projects: Projects }): React.ReactElement | null {
+export function FeaturedWorkSection({
+  projects,
+}: {
+  projects: Projects;
+}): React.ReactElement | null {
   if (projects.length === 0) return null;
   return (
     <section className="py-24">
       <div className="mx-auto max-w-content-xl px-5 lg:px-8">
         <div className="flex items-end justify-between">
-          <h2 className="font-display text-h2 font-bold text-[color:var(--color-text-primary)]">Featured work</h2>
-          <Link href="/work" className="text-small font-medium text-[color:var(--color-brand-primary)] hover:underline">
+          <h2 className="font-display text-h2 font-bold text-[color:var(--color-text-primary)]">
+            Featured work
+          </h2>
+          <Link
+            href="/work"
+            className="text-small font-medium text-[color:var(--color-brand-primary)] hover:underline"
+          >
             View all work
           </Link>
         </div>
@@ -195,23 +210,43 @@ export function FeaturedWorkSection({ projects }: { projects: Projects }): React
 }
 
 /** Testimonials. Renders nothing if zero are published — never fake reviews. */
-export function TestimonialsSection({ testimonials }: { testimonials: Testimonials }): React.ReactElement | null {
+export function TestimonialsSection({
+  testimonials,
+}: {
+  testimonials: Testimonials;
+}): React.ReactElement | null {
   if (testimonials.length === 0) return null;
   return (
     <section className="bg-[color:var(--color-bg-subtle)] py-24">
       <div className="mx-auto max-w-content-xl px-5 lg:px-8">
-        <h2 className="font-display text-h2 font-bold text-[color:var(--color-text-primary)]">What clients say</h2>
+        <h2 className="font-display text-h2 font-bold text-[color:var(--color-text-primary)]">
+          What clients say
+        </h2>
         <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {testimonials.map((testimonial) => (
-            <div key={testimonial.id} className="rounded-lg border border-[color:var(--color-border-default)] bg-[color:var(--color-bg-surface)] p-6">
-              <div className="flex gap-0.5 text-[color:var(--color-feedback-warning)]" aria-label={`${testimonial.rating} out of 5 stars`}>
+            <div
+              key={testimonial.id}
+              className="rounded-lg border border-[color:var(--color-border-default)] bg-[color:var(--color-bg-surface)] p-6"
+            >
+              <div
+                className="flex gap-0.5 text-[color:var(--color-feedback-warning)]"
+                aria-label={`${testimonial.rating} out of 5 stars`}
+              >
                 {Array.from({ length: testimonial.rating }).map((_, i) => (
                   <Star key={i} className="h-4 w-4 fill-current" aria-hidden="true" />
                 ))}
               </div>
-              <p className="mt-3 text-body text-[color:var(--color-text-body)]">&ldquo;{testimonial.reviewText}&rdquo;</p>
-              <p className="mt-4 text-small font-semibold text-[color:var(--color-text-primary)]">{testimonial.clientName}</p>
-              {testimonial.company && <p className="text-small text-[color:var(--color-text-muted)]">{testimonial.company}</p>}
+              <p className="mt-3 text-body text-[color:var(--color-text-body)]">
+                &ldquo;{testimonial.reviewText}&rdquo;
+              </p>
+              <p className="mt-4 text-small font-semibold text-[color:var(--color-text-primary)]">
+                {testimonial.clientName}
+              </p>
+              {testimonial.company && (
+                <p className="text-small text-[color:var(--color-text-muted)]">
+                  {testimonial.company}
+                </p>
+              )}
             </div>
           ))}
         </div>
@@ -225,7 +260,9 @@ export function FaqSection({ faqs }: { faqs: Faqs }): React.ReactElement | null 
   return (
     <section className="py-24">
       <div className="mx-auto max-w-[760px] px-5 lg:px-8">
-        <h2 className="font-display text-h2 font-bold text-[color:var(--color-text-primary)]">Frequently asked questions</h2>
+        <h2 className="font-display text-h2 font-bold text-[color:var(--color-text-primary)]">
+          Frequently asked questions
+        </h2>
         <div className="mt-8 flex flex-col divide-y divide-[color:var(--color-border-default)]">
           {faqs.map((faq) => (
             <details key={faq.id} className="group py-4">
@@ -252,7 +289,9 @@ export function CtaBand({ className }: { className?: string }): React.ReactEleme
     >
       <div className="mx-auto max-w-content-xl px-5 lg:px-8">
         <h2 className="font-display text-h2 font-bold text-white">Ready to start your project?</h2>
-        <p className="mt-3 text-body-lg text-white/90">Tell us what you need — we&apos;ll reply within 24 hours.</p>
+        <p className="mt-3 text-body-lg text-white/90">
+          Tell us what you need — we&apos;ll reply within 24 hours.
+        </p>
         <Link
           href="/contact"
           className="mt-6 inline-flex h-[52px] items-center justify-center rounded-md bg-white px-6 text-body-lg font-medium text-[color:var(--color-brand-primary)] hover:bg-white/90"

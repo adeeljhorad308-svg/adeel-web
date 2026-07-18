@@ -16,10 +16,7 @@ import { serverEnv } from '@/lib/config/env';
 
 const createPrismaClient = (): PrismaClient =>
   new PrismaClient({
-    log:
-      serverEnv.NODE_ENV === 'development'
-        ? ['query', 'warn', 'error']
-        : ['warn', 'error'],
+    log: serverEnv.NODE_ENV === 'development' ? ['query', 'warn', 'error'] : ['warn', 'error'],
   });
 
 type PrismaGlobal = typeof globalThis & {

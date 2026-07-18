@@ -22,28 +22,28 @@
 export const primitives = {
   color: {
     blue: {
-      50: '#EFF6FF',
-      500: '#3B82F6',
-      600: '#2563EB',
-      700: '#1D4ED8',
+      50: '#eff6ff',
+      500: '#3b82f6',
+      600: '#2563eb',
+      700: '#1d4ed8',
     },
     indigo: {
-      500: '#6366F1',
+      500: '#6366f1',
     },
     slate: {
-      50: '#F8FAFC',
-      100: '#F1F5F9',
-      200: '#E2E8F0',
-      500: '#64748B',
+      50: '#f8fafc',
+      100: '#f1f5f9',
+      200: '#e2e8f0',
+      500: '#64748b',
       700: '#334155',
-      800: '#1E293B',
-      900: '#0F172A',
+      800: '#1e293b',
+      900: '#0f172a',
       950: '#020617',
     },
-    white: '#FFFFFF',
-    green: { 500: '#22C55E' },
-    amber: { 500: '#F59E0B' },
-    red: { 500: '#EF4444' },
+    white: '#ffffff',
+    green: { 500: '#22c55e' },
+    amber: { 500: '#f59e0b' },
+    red: { 500: '#ef4444' },
   },
   space: {
     0: '0px',
@@ -104,19 +104,71 @@ export interface SemanticColorToken {
 }
 
 export const semanticColors = {
-  'bg-page': { cssVar: 'color-bg-page', light: primitives.color.slate[50], dark: primitives.color.slate[950] },
-  'bg-surface': { cssVar: 'color-bg-surface', light: primitives.color.white, dark: primitives.color.slate[900] },
-  'bg-subtle': { cssVar: 'color-bg-subtle', light: primitives.color.slate[100], dark: primitives.color.slate[800] },
-  'text-primary': { cssVar: 'color-text-primary', light: primitives.color.slate[950], dark: primitives.color.slate[50] },
-  'text-body': { cssVar: 'color-text-body', light: primitives.color.slate[700], dark: primitives.color.slate[200] },
-  'text-muted': { cssVar: 'color-text-muted', light: primitives.color.slate[500], dark: primitives.color.slate[500] },
-  'border-default': { cssVar: 'color-border-default', light: primitives.color.slate[200], dark: primitives.color.slate[700] },
-  'brand-primary': { cssVar: 'color-brand-primary', light: primitives.color.blue[600], dark: primitives.color.blue[500] },
-  'brand-hover': { cssVar: 'color-brand-hover', light: primitives.color.blue[700], dark: primitives.color.blue[600] },
-  'brand-tint': { cssVar: 'color-brand-tint', light: primitives.color.blue[50], dark: primitives.color.slate[800] },
-  'feedback-success': { cssVar: 'color-feedback-success', light: primitives.color.green[500], dark: primitives.color.green[500] },
-  'feedback-warning': { cssVar: 'color-feedback-warning', light: primitives.color.amber[500], dark: primitives.color.amber[500] },
-  'feedback-error': { cssVar: 'color-feedback-error', light: primitives.color.red[500], dark: primitives.color.red[500] },
+  'bg-page': {
+    cssVar: 'color-bg-page',
+    light: primitives.color.slate[50],
+    dark: primitives.color.slate[950],
+  },
+  'bg-surface': {
+    cssVar: 'color-bg-surface',
+    light: primitives.color.white,
+    dark: primitives.color.slate[900],
+  },
+  'bg-subtle': {
+    cssVar: 'color-bg-subtle',
+    light: primitives.color.slate[100],
+    dark: primitives.color.slate[800],
+  },
+  'text-primary': {
+    cssVar: 'color-text-primary',
+    light: primitives.color.slate[950],
+    dark: primitives.color.slate[50],
+  },
+  'text-body': {
+    cssVar: 'color-text-body',
+    light: primitives.color.slate[700],
+    dark: primitives.color.slate[200],
+  },
+  'text-muted': {
+    cssVar: 'color-text-muted',
+    light: primitives.color.slate[500],
+    dark: primitives.color.slate[500],
+  },
+  'border-default': {
+    cssVar: 'color-border-default',
+    light: primitives.color.slate[200],
+    dark: primitives.color.slate[700],
+  },
+  'brand-primary': {
+    cssVar: 'color-brand-primary',
+    light: primitives.color.blue[600],
+    dark: primitives.color.blue[500],
+  },
+  'brand-hover': {
+    cssVar: 'color-brand-hover',
+    light: primitives.color.blue[700],
+    dark: primitives.color.blue[600],
+  },
+  'brand-tint': {
+    cssVar: 'color-brand-tint',
+    light: primitives.color.blue[50],
+    dark: primitives.color.slate[800],
+  },
+  'feedback-success': {
+    cssVar: 'color-feedback-success',
+    light: primitives.color.green[500],
+    dark: primitives.color.green[500],
+  },
+  'feedback-warning': {
+    cssVar: 'color-feedback-warning',
+    light: primitives.color.amber[500],
+    dark: primitives.color.amber[500],
+  },
+  'feedback-error': {
+    cssVar: 'color-feedback-error',
+    light: primitives.color.red[500],
+    dark: primitives.color.red[500],
+  },
 } as const satisfies Record<string, SemanticColorToken>;
 
 export type SemanticColorName = keyof typeof semanticColors;

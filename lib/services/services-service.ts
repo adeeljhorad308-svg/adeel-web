@@ -41,7 +41,9 @@ async function nextVersionNumber(tx: Prisma.TransactionClient, serviceId: string
   return (last?.versionNo ?? 0) + 1;
 }
 
-export async function listServices(input: ServiceListInput): Promise<ActionResult<Paginated<Service>>> {
+export async function listServices(
+  input: ServiceListInput,
+): Promise<ActionResult<Paginated<Service>>> {
   try {
     await requirePermission('SERVICES', 'VIEW');
     const { page, pageSize, categoryId, visible, search } = parseOrThrow(serviceListSchema, input);
@@ -54,7 +56,12 @@ export async function listServices(input: ServiceListInput): Promise<ActionResul
     };
 
     const [items, total] = await Promise.all([
-      prisma.service.findMany({ where, orderBy: { order: 'asc' }, skip: (page - 1) * pageSize, take: pageSize }),
+      prisma.service.findMany({
+        where,
+        orderBy: { order: 'asc' },
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+      }),
       prisma.service.count({ where }),
     ]);
 
@@ -201,7 +208,12 @@ export async function deleteService(id: string): Promise<ActionResult<{ deleted:
   try {
     const user = await requirePermission('SERVICES', 'DELETE');
     await prisma.service.update({ where: { id }, data: { deletedAt: new Date(), visible: false } });
-    await recordActivity({ actorId: user.id, action: 'services.delete', targetType: 'Service', targetId: id });
+    await recordActivity({
+      actorId: user.id,
+      action: 'services.delete',
+      targetType: 'Service',
+      targetId: id,
+    });
     return { ok: true, data: { deleted: true } };
   } catch (error) {
     return toActionError(error);

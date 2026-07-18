@@ -5,7 +5,10 @@ import { getPost } from '@/lib/actions/blog-actions';
 import { PageHeader } from '@/components/admin/page-primitives';
 import { PostEditorForm } from '@/components/admin/post-editor-form';
 
-export const metadata: Metadata = { title: 'Edit article', robots: { index: false, follow: false } };
+export const metadata: Metadata = {
+  title: 'Edit article',
+  robots: { index: false, follow: false },
+};
 
 export default async function EditPostPage({
   params,

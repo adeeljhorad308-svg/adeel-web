@@ -30,9 +30,7 @@ const SESSION_COOKIE = 'authjs.session-token';
 const SECURE_SESSION_COOKIE = '__Secure-authjs.session-token';
 
 function hasSessionCookie(request: NextRequest): boolean {
-  return (
-    request.cookies.has(SESSION_COOKIE) || request.cookies.has(SECURE_SESSION_COOKIE)
-  );
+  return request.cookies.has(SESSION_COOKIE) || request.cookies.has(SECURE_SESSION_COOKIE);
 }
 
 export function middleware(request: NextRequest): NextResponse {

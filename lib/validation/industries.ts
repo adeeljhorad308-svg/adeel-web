@@ -9,13 +9,21 @@ export const industryListSchema = zPagination.extend({
 });
 export type IndustryListInput = z.infer<typeof industryListSchema>;
 
-const challengeInput = z.object({ iconKey: zNonEmpty('Icon'), label: zNonEmpty('Challenge'), order: z.number().int().default(0) });
+const challengeInput = z.object({
+  iconKey: zNonEmpty('Icon'),
+  label: zNonEmpty('Challenge'),
+  order: z.number().int().default(0),
+});
 const solutionMappingInput = z.object({
   serviceId: z.string().cuid(),
   label: z.string().trim().optional(),
   order: z.number().int().default(0),
 });
-const industryFaqInput = z.object({ question: zNonEmpty('Question'), answer: zNonEmpty('Answer'), order: z.number().int().default(0) });
+const industryFaqInput = z.object({
+  question: zNonEmpty('Question'),
+  answer: zNonEmpty('Answer'),
+  order: z.number().int().default(0),
+});
 
 export const upsertIndustrySchema = z
   .object({

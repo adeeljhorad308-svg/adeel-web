@@ -40,7 +40,12 @@ export async function saveFooterConfig(input: unknown): Promise<ActionResult<Foo
       ? await prisma.footerConfig.update({ where: { id: existing.id }, data: payload })
       : await prisma.footerConfig.create({ data: payload });
 
-    await recordActivity({ actorId: user.id, action: 'footer.update', targetType: 'FooterConfig', targetId: config.id });
+    await recordActivity({
+      actorId: user.id,
+      action: 'footer.update',
+      targetType: 'FooterConfig',
+      targetId: config.id,
+    });
 
     return { ok: true, data: config };
   } catch (error) {

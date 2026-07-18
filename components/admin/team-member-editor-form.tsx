@@ -12,7 +12,17 @@ import { FormField } from '@/components/ui/form-field';
 import { Alert } from '@/components/ui/alert';
 import type { TeamMember } from '@prisma/client';
 
-const SOCIAL_PLATFORMS = ['github', 'linkedin', 'facebook', 'instagram', 'whatsapp', 'email', 'youtube', 'x', 'tiktok'] as const;
+const SOCIAL_PLATFORMS = [
+  'github',
+  'linkedin',
+  'facebook',
+  'instagram',
+  'whatsapp',
+  'email',
+  'youtube',
+  'x',
+  'tiktok',
+] as const;
 
 /** Team member editor (Stage 4 §5). */
 export function TeamMemberEditorForm({ member }: { member?: TeamMember }): React.ReactElement {
@@ -21,7 +31,12 @@ export function TeamMemberEditorForm({ member }: { member?: TeamMember }): React
   const [conflict, setConflict] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
-  const { register, handleSubmit, control, formState: { errors } } = useForm<UpsertTeamMemberInput>({
+  const {
+    register,
+    handleSubmit,
+    control,
+    formState: { errors },
+  } = useForm<UpsertTeamMemberInput>({
     resolver: zodResolver(upsertTeamMemberSchema),
     defaultValues: member
       ? {
@@ -68,7 +83,11 @@ export function TeamMemberEditorForm({ member }: { member?: TeamMember }): React
   }
 
   return (
-    <form onSubmit={(e) => void handleSubmit(onSubmit)(e)} className="flex flex-col gap-6" noValidate>
+    <form
+      onSubmit={(e) => void handleSubmit(onSubmit)(e)}
+      className="flex flex-col gap-6"
+      noValidate
+    >
       {member && <input type="hidden" {...register('id')} />}
       {member && <input type="hidden" {...register('version', { valueAsNumber: true })} />}
 
@@ -77,7 +96,12 @@ export function TeamMemberEditorForm({ member }: { member?: TeamMember }): React
         <Alert tone="error">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <span>This team member was changed by someone else since you opened it.</span>
-            <Button type="button" variant="secondary" size="sm" onClick={() => window.location.reload()}>
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              onClick={() => window.location.reload()}
+            >
               Reload page
             </Button>
           </div>
@@ -86,13 +110,21 @@ export function TeamMemberEditorForm({ member }: { member?: TeamMember }): React
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <FormField label="Name" required error={errors.name?.message} {...register('name')} />
-        <FormField label="Designation" required error={errors.designation?.message} {...register('designation')} />
+        <FormField
+          label="Designation"
+          required
+          error={errors.designation?.message}
+          {...register('designation')}
+        />
       </div>
 
       <FormField label="Department" {...register('department')} />
 
       <div className="flex flex-col gap-1.5">
-        <label htmlFor="bio" className="text-small font-semibold text-[color:var(--color-text-primary)]">
+        <label
+          htmlFor="bio"
+          className="text-small font-semibold text-[color:var(--color-text-primary)]"
+        >
           Bio
         </label>
         <textarea
@@ -106,7 +138,9 @@ export function TeamMemberEditorForm({ member }: { member?: TeamMember }): React
       <FormField label="Experience" hint="e.g. 8 years" {...register('experience')} />
 
       <fieldset className="flex flex-col gap-3">
-        <legend className="text-small font-semibold text-[color:var(--color-text-primary)]">Skills</legend>
+        <legend className="text-small font-semibold text-[color:var(--color-text-primary)]">
+          Skills
+        </legend>
         {skills.fields.map((field, index) => (
           <div key={field.id} className="flex items-center gap-2">
             <input
@@ -136,7 +170,9 @@ export function TeamMemberEditorForm({ member }: { member?: TeamMember }): React
       </fieldset>
 
       <fieldset className="flex flex-col gap-3">
-        <legend className="text-small font-semibold text-[color:var(--color-text-primary)]">Social links</legend>
+        <legend className="text-small font-semibold text-[color:var(--color-text-primary)]">
+          Social links
+        </legend>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           {SOCIAL_PLATFORMS.map((platform, index) => (
             <FormField
@@ -150,7 +186,11 @@ export function TeamMemberEditorForm({ member }: { member?: TeamMember }): React
       </fieldset>
 
       <label className="flex items-center gap-2 text-small text-[color:var(--color-text-body)]">
-        <input type="checkbox" {...register('active')} className="h-4 w-4 rounded border-[color:var(--color-border-default)]" />
+        <input
+          type="checkbox"
+          {...register('active')}
+          className="h-4 w-4 rounded border-[color:var(--color-border-default)]"
+        />
         Active (shown on the public site)
       </label>
 

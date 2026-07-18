@@ -46,7 +46,12 @@ export async function saveGlobalSeoConfig(input: unknown): Promise<ActionResult<
       ? await prisma.globalSeoConfig.update({ where: { id: existing.id }, data: payload })
       : await prisma.globalSeoConfig.create({ data: payload });
 
-    await recordActivity({ actorId: user.id, action: 'seo.global.update', targetType: 'GlobalSeoConfig', targetId: config.id });
+    await recordActivity({
+      actorId: user.id,
+      action: 'seo.global.update',
+      targetType: 'GlobalSeoConfig',
+      targetId: config.id,
+    });
     return { ok: true, data: config };
   } catch (error) {
     return toActionError(error);
@@ -82,18 +87,29 @@ export async function saveSeoOverride(input: unknown): Promise<ActionResult<SeoO
       update: payload,
     });
 
-    await recordActivity({ actorId: user.id, action: 'seo.override.update', targetType: 'SeoOverride', targetId: override.id });
+    await recordActivity({
+      actorId: user.id,
+      action: 'seo.override.update',
+      targetType: 'SeoOverride',
+      targetId: override.id,
+    });
     return { ok: true, data: override };
   } catch (error) {
     return toActionError(error);
   }
 }
 
-export async function deleteSeoOverride(pagePath: string): Promise<ActionResult<{ deleted: true }>> {
+export async function deleteSeoOverride(
+  pagePath: string,
+): Promise<ActionResult<{ deleted: true }>> {
   try {
     const user = await requirePermission('SEO', 'DELETE');
     await prisma.seoOverride.delete({ where: { pagePath } });
-    await recordActivity({ actorId: user.id, action: 'seo.override.delete', targetType: 'SeoOverride' });
+    await recordActivity({
+      actorId: user.id,
+      action: 'seo.override.delete',
+      targetType: 'SeoOverride',
+    });
     return { ok: true, data: { deleted: true } };
   } catch (error) {
     return toActionError(error);

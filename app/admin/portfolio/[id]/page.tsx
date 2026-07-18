@@ -5,7 +5,10 @@ import { getProject } from '@/lib/actions/portfolio-actions';
 import { PageHeader } from '@/components/admin/page-primitives';
 import { ProjectEditorForm } from '@/components/admin/project-editor-form';
 
-export const metadata: Metadata = { title: 'Edit project', robots: { index: false, follow: false } };
+export const metadata: Metadata = {
+  title: 'Edit project',
+  robots: { index: false, follow: false },
+};
 
 export default async function EditProjectPage({
   params,

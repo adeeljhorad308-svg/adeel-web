@@ -21,7 +21,10 @@ export default async function AdminPortfolioPage(): Promise<React.ReactElement> 
         description="Manage case studies and projects shown on your site."
         action={
           <Link href="/admin/portfolio/new">
-            <Button><Plus className="h-4 w-4" aria-hidden="true" />Add project</Button>
+            <Button>
+              <Plus className="h-4 w-4" aria-hidden="true" />
+              Add project
+            </Button>
           </Link>
         }
       />

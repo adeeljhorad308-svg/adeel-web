@@ -21,7 +21,10 @@ export default async function AdminBlogPage(): Promise<React.ReactElement> {
         description="Write and manage articles for your site."
         action={
           <Link href="/admin/blog/new">
-            <Button><Plus className="h-4 w-4" aria-hidden="true" />Write article</Button>
+            <Button>
+              <Plus className="h-4 w-4" aria-hidden="true" />
+              Write article
+            </Button>
           </Link>
         }
       />

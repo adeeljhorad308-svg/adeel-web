@@ -7,3 +7,6 @@ import '@testing-library/jest-dom/vitest';
 process.env.SKIP_ENV_VALIDATION = 'true';
 process.env.NEXT_PUBLIC_APP_URL ??= 'http://localhost:3000';
 process.env.NEXT_PUBLIC_DEFAULT_LOCALE ??= 'en';
+// `serverEnv` is parsed once at module import time, so this must be set here
+// (before any test file imports it) rather than inside a test body.
+process.env.NEXTAUTH_SECRET ??= 'a'.repeat(32);

@@ -11,17 +11,21 @@ export default async function AdminFooterPage(): Promise<React.ReactElement> {
   await requirePermissionOrRedirect('FOOTER', 'VIEW', '/admin/footer');
 
   const result = await getFooterConfig();
-  const initial: FooterConfigInput = result.ok && result.data
-    ? {
-        columns: result.data.columns as FooterConfigInput['columns'],
-        copyright: result.data.copyright ?? undefined,
-        showNewsletter: result.data.showNewsletter,
-      }
-    : { columns: [], showNewsletter: true };
+  const initial: FooterConfigInput =
+    result.ok && result.data
+      ? {
+          columns: result.data.columns as FooterConfigInput['columns'],
+          copyright: result.data.copyright ?? undefined,
+          showNewsletter: result.data.showNewsletter,
+        }
+      : { columns: [], showNewsletter: true };
 
   return (
     <>
-      <PageHeader title="Footer" description="Manage footer link columns, copyright, and newsletter visibility." />
+      <PageHeader
+        title="Footer"
+        description="Manage footer link columns, copyright, and newsletter visibility."
+      />
       <FooterBuilderClient initial={initial} />
     </>
   );

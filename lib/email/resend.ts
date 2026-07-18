@@ -23,6 +23,10 @@ export interface SendEmailInput {
 }
 
 export async function sendEmail(input: SendEmailInput): Promise<{ id: string }> {
+  if (!serverEnv.EMAIL_FROM) {
+    throw new Error('EMAIL_FROM is not configured.');
+  }
+
   const { data, error } = await resend.emails.send({
     from: serverEnv.EMAIL_FROM,
     to: input.to,

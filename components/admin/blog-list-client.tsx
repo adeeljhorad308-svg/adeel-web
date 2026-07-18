@@ -54,7 +54,10 @@ export function BlogListClient({ initialPosts }: { initialPosts: Post[] }): Reac
           description="Write your first blog post to start attracting organic traffic."
           action={
             <Link href="/admin/blog/new">
-              <Button><Plus className="h-4 w-4" aria-hidden="true" />Write article</Button>
+              <Button>
+                <Plus className="h-4 w-4" aria-hidden="true" />
+                Write article
+              </Button>
             </Link>
           }
         />
@@ -64,7 +67,11 @@ export function BlogListClient({ initialPosts }: { initialPosts: Post[] }): Reac
           rows={posts}
           getRowId={(row) => row.id}
           columns={[
-            { key: 'title', header: 'Title', render: (row) => <span className="font-medium">{row.title}</span> },
+            {
+              key: 'title',
+              header: 'Title',
+              render: (row) => <span className="font-medium">{row.title}</span>,
+            },
             {
               key: 'status',
               header: 'Status',
@@ -80,7 +87,12 @@ export function BlogListClient({ initialPosts }: { initialPosts: Post[] }): Reac
                 </div>
               ),
             },
-            { key: 'readingTime', header: 'Reading time', render: (row) => `${row.readingTime} min`, hideOnMobile: true },
+            {
+              key: 'readingTime',
+              header: 'Reading time',
+              render: (row) => `${row.readingTime} min`,
+              hideOnMobile: true,
+            },
           ]}
           rowActions={(row) => (
             <div className="flex justify-end gap-1">

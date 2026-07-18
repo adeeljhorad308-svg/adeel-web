@@ -28,7 +28,10 @@ const DENY_MAGIC: ReadonlyArray<readonly number[]> = [
   [0x23, 0x21], // shebang "#!"
 ];
 
-function matchesMagic(buffer: Buffer, signature: { bytes: readonly number[]; offset?: number }): boolean {
+function matchesMagic(
+  buffer: Buffer,
+  signature: { bytes: readonly number[]; offset?: number },
+): boolean {
   const start = signature.offset ?? 0;
   if (buffer.length < start + signature.bytes.length) return false;
   return signature.bytes.every((byte, i) => buffer[start + i] === byte);
@@ -66,7 +69,9 @@ export function validateUpload(
 
   const sniffed = sniffMime(buffer);
   if (!sniffed) {
-    throw new ValidationError('Could not verify this file type. Upload a supported image, video, or document.');
+    throw new ValidationError(
+      'Could not verify this file type. Upload a supported image, video, or document.',
+    );
   }
 
   const allowedImage = UPLOAD_LIMITS.allowedImageMime.includes(sniffed as never);
@@ -92,7 +97,9 @@ export function validateUpload(
         : UPLOAD_LIMITS.maxDocumentBytes;
 
   if (sizeBytes > limit) {
-    throw new ValidationError(`File is too large. Maximum size is ${Math.round(limit / (1024 * 1024))}MB.`);
+    throw new ValidationError(
+      `File is too large. Maximum size is ${Math.round(limit / (1024 * 1024))}MB.`,
+    );
   }
 
   return { sniffedMime: sniffed, category };

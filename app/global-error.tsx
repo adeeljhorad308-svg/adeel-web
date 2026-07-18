@@ -23,7 +23,15 @@ export default function GlobalError({ reset }: { reset: () => void }): React.Rea
         }}
       >
         <div style={{ maxWidth: 560 }}>
-          <p style={{ textTransform: 'uppercase', letterSpacing: '0.08em', color: '#ef4444', fontSize: 12, fontWeight: 600 }}>
+          <p
+            style={{
+              textTransform: 'uppercase',
+              letterSpacing: '0.08em',
+              color: '#ef4444',
+              fontSize: 12,
+              fontWeight: 600,
+            }}
+          >
             Error 500
           </p>
           <h1 style={{ fontSize: 40, margin: '1rem 0', fontWeight: 700 }}>Something went wrong</h1>

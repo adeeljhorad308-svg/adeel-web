@@ -16,7 +16,11 @@ import { Alert } from '@/components/ui/alert';
  * this module owns the link columns, copyright, and newsletter toggle only —
  * keeping each module's write surface narrow and predictable.
  */
-export function FooterBuilderClient({ initial }: { initial: FooterConfigInput }): React.ReactElement {
+export function FooterBuilderClient({
+  initial,
+}: {
+  initial: FooterConfigInput;
+}): React.ReactElement {
   const [saved, setSaved] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
@@ -24,7 +28,11 @@ export function FooterBuilderClient({ initial }: { initial: FooterConfigInput })
     resolver: zodResolver(footerConfigSchema),
     defaultValues: initial,
   });
-  const { fields: columns, append: appendColumn, remove: removeColumn } = useFieldArray({
+  const {
+    fields: columns,
+    append: appendColumn,
+    remove: removeColumn,
+  } = useFieldArray({
     control,
     name: 'columns',
   });
@@ -43,7 +51,11 @@ export function FooterBuilderClient({ initial }: { initial: FooterConfigInput })
       <FormField label="Copyright text" {...register('copyright')} />
 
       <label className="flex items-center gap-2 text-small text-[color:var(--color-text-body)]">
-        <input type="checkbox" {...register('showNewsletter')} className="h-4 w-4 rounded border-[color:var(--color-border-default)]" />
+        <input
+          type="checkbox"
+          {...register('showNewsletter')}
+          className="h-4 w-4 rounded border-[color:var(--color-border-default)]"
+        />
         Show newsletter signup
       </label>
 
@@ -88,7 +100,11 @@ function FooterColumnEditor({
   columnIndex: number;
   onRemoveColumn: () => void;
 }): React.ReactElement {
-  const { fields: links, append, remove } = useFieldArray({
+  const {
+    fields: links,
+    append,
+    remove,
+  } = useFieldArray({
     control,
     name: `columns.${columnIndex}.links`,
   });
@@ -133,7 +149,13 @@ function FooterColumnEditor({
             </button>
           </div>
         ))}
-        <Button type="button" variant="ghost" size="sm" onClick={() => append({ label: '', href: '' })} className="w-fit">
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          onClick={() => append({ label: '', href: '' })}
+          className="w-fit"
+        >
           <Plus className="h-3.5 w-3.5" aria-hidden="true" />
           Add link
         </Button>

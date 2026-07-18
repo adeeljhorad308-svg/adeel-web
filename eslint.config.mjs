@@ -24,7 +24,15 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const compat = new FlatCompat({ baseDirectory: __dirname });
 
-const typeCheckedFiles = ['app/**/*.{ts,tsx}', 'components/**/*.{ts,tsx}', 'lib/**/*.{ts,tsx}', 'tests/**/*.{ts,tsx}', 'trigger/**/*.{ts,tsx}', 'types/**/*.{ts,tsx}', 'prisma/**/*.ts'];
+const typeCheckedFiles = [
+  'app/**/*.{ts,tsx}',
+  'components/**/*.{ts,tsx}',
+  'lib/**/*.{ts,tsx}',
+  'tests/**/*.{ts,tsx}',
+  'trigger/**/*.{ts,tsx}',
+  'types/**/*.{ts,tsx}',
+  'prisma/**/*.ts',
+];
 
 export default tseslint.config(
   {

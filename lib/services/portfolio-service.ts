@@ -32,10 +32,15 @@ async function nextVersionNumber(tx: Prisma.TransactionClient, projectId: string
   return (last?.versionNo ?? 0) + 1;
 }
 
-export async function listProjects(input: ProjectListInput): Promise<ActionResult<Paginated<Project>>> {
+export async function listProjects(
+  input: ProjectListInput,
+): Promise<ActionResult<Paginated<Project>>> {
   try {
     await requirePermission('PORTFOLIO', 'VIEW');
-    const { page, pageSize, status, categoryId, featured, search } = parseOrThrow(projectListSchema, input);
+    const { page, pageSize, status, categoryId, featured, search } = parseOrThrow(
+      projectListSchema,
+      input,
+    );
 
     const where: Prisma.ProjectWhereInput = {
       deletedAt: null,
@@ -46,7 +51,12 @@ export async function listProjects(input: ProjectListInput): Promise<ActionResul
     };
 
     const [items, total] = await Promise.all([
-      prisma.project.findMany({ where, orderBy: { order: 'asc' }, skip: (page - 1) * pageSize, take: pageSize }),
+      prisma.project.findMany({
+        where,
+        orderBy: { order: 'asc' },
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+      }),
       prisma.project.count({ where }),
     ]);
 
@@ -114,14 +124,22 @@ export async function upsertProject(input: unknown): Promise<ActionResult<Projec
 
       if (data.narratives.length > 0) {
         await tx.projectNarrative.createMany({
-          data: data.narratives.map((n) => ({ ...n, bodyRich: sanitizeRichText(n.bodyRich), projectId: project.id })),
+          data: data.narratives.map((n) => ({
+            ...n,
+            bodyRich: sanitizeRichText(n.bodyRich),
+            projectId: project.id,
+          })),
         });
       }
       if (data.metrics.length > 0) {
-        await tx.projectMetric.createMany({ data: data.metrics.map((m) => ({ ...m, projectId: project.id })) });
+        await tx.projectMetric.createMany({
+          data: data.metrics.map((m) => ({ ...m, projectId: project.id })),
+        });
       }
       if (data.media.length > 0) {
-        await tx.projectMedia.createMany({ data: data.media.map((m) => ({ ...m, projectId: project.id })) });
+        await tx.projectMedia.createMany({
+          data: data.media.map((m) => ({ ...m, projectId: project.id })),
+        });
       }
       if (data.technologyIds.length > 0) {
         await tx.projectTechnology.createMany({
@@ -163,7 +181,10 @@ export async function upsertProject(input: unknown): Promise<ActionResult<Projec
 export async function deleteProject(id: string): Promise<ActionResult<{ deleted: true }>> {
   try {
     const user = await requirePermission('PORTFOLIO', 'DELETE');
-    await prisma.project.update({ where: { id }, data: { deletedAt: new Date(), status: 'ARCHIVED' } });
+    await prisma.project.update({
+      where: { id },
+      data: { deletedAt: new Date(), status: 'ARCHIVED' },
+    });
     await recordActivity({
       actorId: user.id,
       action: 'portfolio.project.delete',

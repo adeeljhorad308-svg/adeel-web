@@ -10,7 +10,7 @@ import { serverEnv } from './lib/config/env';
  * directory. Retries are conservative defaults; individual tasks can override.
  */
 export default defineConfig({
-  project: serverEnv.TRIGGER_PROJECT_ID,
+  project: serverEnv.TRIGGER_PROJECT_ID ?? '',
   dirs: ['./trigger'],
   maxDuration: 300,
   retries: {

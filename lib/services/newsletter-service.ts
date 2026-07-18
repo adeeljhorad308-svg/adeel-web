@@ -11,7 +11,9 @@ import { ValidationError } from '@/lib/errors';
 import type { ActionResult } from '@/lib/types';
 
 /** Newsletter (Stage 2 §12; double opt-in). */
-export async function subscribeNewsletter(input: unknown): Promise<ActionResult<{ subscribed: true }>> {
+export async function subscribeNewsletter(
+  input: unknown,
+): Promise<ActionResult<{ subscribed: true }>> {
   try {
     const data = parseOrThrow(newsletterSubscribeSchema, input);
     const ip = await getClientIp();
@@ -42,13 +44,18 @@ export async function subscribeNewsletter(input: unknown): Promise<ActionResult<
   }
 }
 
-export async function confirmNewsletterSubscription(token: string): Promise<ActionResult<{ confirmed: true }>> {
+export async function confirmNewsletterSubscription(
+  token: string,
+): Promise<ActionResult<{ confirmed: true }>> {
   try {
     const email = await consumeToken(token, 'EMAIL_VERIFICATION');
     if (!email) {
       throw new ValidationError('This confirmation link is invalid or has expired.');
     }
-    await prisma.newsletterSubscriber.update({ where: { email }, data: { status: 'CONFIRMED', confirmedAt: new Date() } });
+    await prisma.newsletterSubscriber.update({
+      where: { email },
+      data: { status: 'CONFIRMED', confirmedAt: new Date() },
+    });
     return { ok: true, data: { confirmed: true } };
   } catch (error) {
     return toActionError(error);

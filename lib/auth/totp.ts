@@ -1,5 +1,12 @@
 import 'server-only';
-import { createHmac, randomBytes, timingSafeEqual, createCipheriv, createDecipheriv, createHash } from 'node:crypto';
+import {
+  createHmac,
+  randomBytes,
+  timingSafeEqual,
+  createCipheriv,
+  createDecipheriv,
+  createHash,
+} from 'node:crypto';
 import { serverEnv } from '@/lib/config/env';
 
 /**
@@ -38,7 +45,7 @@ function toBase32(buffer: Buffer): string {
 }
 
 function fromBase32(input: string): Buffer {
-  const clean = input.replace(/=+$/,'').toUpperCase();
+  const clean = input.replace(/=+$/, '').toUpperCase();
   let bits = 0;
   let value = 0;
   const bytes: number[] = [];
@@ -59,7 +66,9 @@ function fromBase32(input: string): Buffer {
 
 function encryptionKey(): Buffer {
   if (!serverEnv.NEXTAUTH_SECRET) {
-    throw new Error('NEXTAUTH_SECRET is required for TOTP secret encryption but is not configured.');
+    throw new Error(
+      'NEXTAUTH_SECRET is required for TOTP secret encryption but is not configured.',
+    );
   }
   return createHash('sha256').update(serverEnv.NEXTAUTH_SECRET).digest();
 }
@@ -70,7 +79,9 @@ export function encryptSecret(secretBase32: string): string {
   const cipher = createCipheriv('aes-256-gcm', encryptionKey(), iv);
   const encrypted = Buffer.concat([cipher.update(secretBase32, 'utf8'), cipher.final()]);
   const authTag = cipher.getAuthTag();
-  return [iv.toString('base64'), authTag.toString('base64'), encrypted.toString('base64')].join(':');
+  return [iv.toString('base64'), authTag.toString('base64'), encrypted.toString('base64')].join(
+    ':',
+  );
 }
 
 /** Decrypt a stored secret back to base32. */
@@ -79,7 +90,10 @@ export function decryptSecret(stored: string): string {
   if (!ivB64 || !tagB64 || !dataB64) throw new Error('Malformed 2FA secret.');
   const decipher = createDecipheriv('aes-256-gcm', encryptionKey(), Buffer.from(ivB64, 'base64'));
   decipher.setAuthTag(Buffer.from(tagB64, 'base64'));
-  return Buffer.concat([decipher.update(Buffer.from(dataB64, 'base64')), decipher.final()]).toString('utf8');
+  return Buffer.concat([
+    decipher.update(Buffer.from(dataB64, 'base64')),
+    decipher.final(),
+  ]).toString('utf8');
 }
 
 // --- TOTP core ---

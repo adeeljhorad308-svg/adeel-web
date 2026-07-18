@@ -30,8 +30,16 @@ export default async function AdminDashboardPage(): Promise<React.ReactElement> 
         description="Your platform overview. More insights appear as content and leads are added."
       />
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard label="Team members" value={String(userCount)} hint="Accounts with dashboard access" />
-        <StatCard label="Activity events" value={String(activityCount)} hint="Logged actions to date" />
+        <StatCard
+          label="Team members"
+          value={String(userCount)}
+          hint="Accounts with dashboard access"
+        />
+        <StatCard
+          label="Activity events"
+          value={String(activityCount)}
+          hint="Logged actions to date"
+        />
       </div>
     </>
   );

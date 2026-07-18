@@ -12,14 +12,17 @@ import type { Notification, NotificationType, Role, Prisma } from '@prisma/clien
  * Critical types (LEAD, CONTACT, SECURITY) should also enqueue an email job by
  * the caller; this service only handles the in-app record.
  */
-export async function notify(input: {
-  type: NotificationType;
-  title: string;
-  body?: string;
-  link?: string;
-  targetUserId?: string;
-  targetRole?: Role;
-}, tx?: Prisma.TransactionClient): Promise<void> {
+export async function notify(
+  input: {
+    type: NotificationType;
+    title: string;
+    body?: string;
+    link?: string;
+    targetUserId?: string;
+    targetRole?: Role;
+  },
+  tx?: Prisma.TransactionClient,
+): Promise<void> {
   const client = tx ?? prisma;
   await client.notification.create({
     data: {
@@ -40,10 +43,19 @@ export async function listNotifications(
   try {
     const user = await requirePermission('NOTIFICATIONS', 'VIEW');
     const where = {
-      OR: [{ targetUserId: user.id }, { targetRole: user.role }, { targetUserId: null, targetRole: null }],
+      OR: [
+        { targetUserId: user.id },
+        { targetRole: user.role },
+        { targetUserId: null, targetRole: null },
+      ],
     };
     const [items, total, unreadCount] = await Promise.all([
-      prisma.notification.findMany({ where, orderBy: { createdAt: 'desc' }, skip: (page - 1) * pageSize, take: pageSize }),
+      prisma.notification.findMany({
+        where,
+        orderBy: { createdAt: 'desc' },
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+      }),
       prisma.notification.count({ where }),
       prisma.notification.count({ where: { ...where, readAt: null } }),
     ]);

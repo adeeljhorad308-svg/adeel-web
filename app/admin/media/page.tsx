@@ -4,7 +4,10 @@ import { listMedia } from '@/lib/actions/media-actions';
 import { PageHeader } from '@/components/admin/page-primitives';
 import { MediaManagerClient } from '@/components/admin/media-manager-client';
 
-export const metadata: Metadata = { title: 'Media Library', robots: { index: false, follow: false } };
+export const metadata: Metadata = {
+  title: 'Media Library',
+  robots: { index: false, follow: false },
+};
 
 /**
  * Media Manager list page (Stage 4 §10). Server-fetches the first page of assets;
@@ -18,7 +21,10 @@ export default async function AdminMediaPage(): Promise<React.ReactElement> {
 
   return (
     <>
-      <PageHeader title="Media Library" description="Upload and manage images, videos, and documents." />
+      <PageHeader
+        title="Media Library"
+        description="Upload and manage images, videos, and documents."
+      />
       <MediaManagerClient initialMedia={[...media]} />
     </>
   );

@@ -43,7 +43,11 @@ const uploadResponseSchema = z.union([
   }),
 ]);
 
-export function MediaManagerClient({ initialMedia }: { initialMedia: Media[] }): React.ReactElement {
+export function MediaManagerClient({
+  initialMedia,
+}: {
+  initialMedia: Media[];
+}): React.ReactElement {
   const [media, setMedia] = useState(initialMedia);
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
@@ -148,7 +152,10 @@ export function MediaManagerClient({ initialMedia }: { initialMedia: Media[] }):
       {uploadError && <Alert tone="error">{uploadError}</Alert>}
 
       {media.length === 0 ? (
-        <EmptyState title="No media yet" description="Upload your first image, video, or document to get started." />
+        <EmptyState
+          title="No media yet"
+          description="Upload your first image, video, or document to get started."
+        />
       ) : (
         <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
           {media.map((item) => (
@@ -158,15 +165,30 @@ export function MediaManagerClient({ initialMedia }: { initialMedia: Media[] }):
             >
               <div className="relative flex aspect-square items-center justify-center bg-[color:var(--color-bg-subtle)]">
                 {item.type === 'IMAGE' || item.type === 'SVG' ? (
-                  <Image src={item.url} alt={item.altText ?? ''} fill sizes="200px" className="object-cover" />
+                  <Image
+                    src={item.url}
+                    alt={item.altText ?? ''}
+                    fill
+                    sizes="200px"
+                    className="object-cover"
+                  />
                 ) : item.type === 'VIDEO' ? (
-                  <Film className="h-8 w-8 text-[color:var(--color-text-muted)]" aria-hidden="true" />
+                  <Film
+                    className="h-8 w-8 text-[color:var(--color-text-muted)]"
+                    aria-hidden="true"
+                  />
                 ) : (
-                  <FileText className="h-8 w-8 text-[color:var(--color-text-muted)]" aria-hidden="true" />
+                  <FileText
+                    className="h-8 w-8 text-[color:var(--color-text-muted)]"
+                    aria-hidden="true"
+                  />
                 )}
               </div>
               <div className="flex flex-1 flex-col gap-2 p-3">
-                <label htmlFor={`alt-${item.id}`} className="text-overline font-semibold uppercase text-[color:var(--color-text-muted)]">
+                <label
+                  htmlFor={`alt-${item.id}`}
+                  className="text-overline font-semibold uppercase text-[color:var(--color-text-muted)]"
+                >
                   Alt text
                 </label>
                 <input

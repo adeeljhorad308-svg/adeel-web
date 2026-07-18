@@ -11,7 +11,9 @@ import type { TeamMember, Prisma } from '@prisma/client';
 
 /** Team Management service (Stage 4 §5). Same transaction/version-lock pattern. */
 
-export async function listTeamMembers(input: TeamListInput): Promise<ActionResult<Paginated<TeamMember>>> {
+export async function listTeamMembers(
+  input: TeamListInput,
+): Promise<ActionResult<Paginated<TeamMember>>> {
   try {
     await requirePermission('TEAM', 'VIEW');
     const { page, pageSize, active, department } = parseOrThrow(teamListSchema, input);
@@ -23,7 +25,12 @@ export async function listTeamMembers(input: TeamListInput): Promise<ActionResul
     };
 
     const [items, total] = await Promise.all([
-      prisma.teamMember.findMany({ where, orderBy: { order: 'asc' }, skip: (page - 1) * pageSize, take: pageSize }),
+      prisma.teamMember.findMany({
+        where,
+        orderBy: { order: 'asc' },
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+      }),
       prisma.teamMember.count({ where }),
     ]);
 
@@ -114,8 +121,16 @@ export async function upsertTeamMember(input: unknown): Promise<ActionResult<Tea
 export async function deleteTeamMember(id: string): Promise<ActionResult<{ deleted: true }>> {
   try {
     const user = await requirePermission('TEAM', 'DELETE');
-    await prisma.teamMember.update({ where: { id }, data: { deletedAt: new Date(), active: false } });
-    await recordActivity({ actorId: user.id, action: 'team.delete', targetType: 'TeamMember', targetId: id });
+    await prisma.teamMember.update({
+      where: { id },
+      data: { deletedAt: new Date(), active: false },
+    });
+    await recordActivity({
+      actorId: user.id,
+      action: 'team.delete',
+      targetType: 'TeamMember',
+      targetId: id,
+    });
     return { ok: true, data: { deleted: true } };
   } catch (error) {
     return toActionError(error);

@@ -9,11 +9,13 @@ import type { DefaultSession } from 'next-auth';
  */
 declare module 'next-auth' {
   interface Session {
-    user: ({
-      id: string;
-      role: Role;
-      status: UserStatus;
-    } & DefaultSession['user']) | undefined;
+    user:
+      | ({
+          id: string;
+          role: Role;
+          status: UserStatus;
+        } & DefaultSession['user'])
+      | undefined;
     /** Our own Session table row id, embedded for revocation checks. Absent
      *  when the session has been revoked/expired (session callback nulls the user). */
     dbSessionId?: string;

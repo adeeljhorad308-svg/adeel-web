@@ -14,7 +14,11 @@ import { deleteTeamMember } from '@/lib/actions/team-actions';
 import type { TeamMember } from '@prisma/client';
 
 /** Team Management list (Stage 4 §5). */
-export function TeamListClient({ initialMembers }: { initialMembers: TeamMember[] }): React.ReactElement {
+export function TeamListClient({
+  initialMembers,
+}: {
+  initialMembers: TeamMember[];
+}): React.ReactElement {
   const router = useRouter();
   const [members, setMembers] = useState(initialMembers);
   const [pendingDelete, setPendingDelete] = useState<TeamMember | null>(null);
@@ -51,7 +55,10 @@ export function TeamListClient({ initialMembers }: { initialMembers: TeamMember[
           description="Add your first team member to show them on the About page."
           action={
             <Link href="/admin/team/new">
-              <Button><Plus className="h-4 w-4" aria-hidden="true" />Add member</Button>
+              <Button>
+                <Plus className="h-4 w-4" aria-hidden="true" />
+                Add member
+              </Button>
             </Link>
           }
         />
@@ -61,9 +68,22 @@ export function TeamListClient({ initialMembers }: { initialMembers: TeamMember[
           rows={members}
           getRowId={(row) => row.id}
           columns={[
-            { key: 'name', header: 'Name', render: (row) => <span className="font-medium">{row.name}</span> },
-            { key: 'designation', header: 'Designation', render: (row) => row.designation, hideOnMobile: true },
-            { key: 'status', header: 'Status', render: (row) => <StatusPill status={row.active ? 'ACTIVE' : 'INACTIVE'} /> },
+            {
+              key: 'name',
+              header: 'Name',
+              render: (row) => <span className="font-medium">{row.name}</span>,
+            },
+            {
+              key: 'designation',
+              header: 'Designation',
+              render: (row) => row.designation,
+              hideOnMobile: true,
+            },
+            {
+              key: 'status',
+              header: 'Status',
+              render: (row) => <StatusPill status={row.active ? 'ACTIVE' : 'INACTIVE'} />,
+            },
           ]}
           rowActions={(row) => (
             <div className="flex justify-end gap-1">

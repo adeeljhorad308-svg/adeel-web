@@ -1,6 +1,10 @@
 import type { Metadata } from 'next';
 import { requirePermissionOrRedirect } from '@/lib/auth/guards';
-import { getCompanySettings, getSocialLinks, getAnalyticsSettings } from '@/lib/actions/settings-actions';
+import {
+  getCompanySettings,
+  getSocialLinks,
+  getAnalyticsSettings,
+} from '@/lib/actions/settings-actions';
 import { PageHeader } from '@/components/admin/page-primitives';
 import { SettingsClient } from '@/components/admin/settings-client';
 
@@ -17,7 +21,10 @@ export default async function AdminSettingsPage(): Promise<React.ReactElement> {
 
   return (
     <>
-      <PageHeader title="Settings" description="Company details, social links, and analytics — all editable, no code required." />
+      <PageHeader
+        title="Settings"
+        description="Company details, social links, and analytics — all editable, no code required."
+      />
       <SettingsClient
         company={company.ok ? company.data : {}}
         social={social.ok ? social.data : {}}

@@ -1,16 +1,21 @@
 import type { MetadataRoute } from 'next';
+import { clientEnv } from '@/lib/config/env';
 
-/**
- * Static robots.txt to guarantee build success.
- * Dynamic version can be restored later when full env is available.
- */
-const robots: MetadataRoute.Robots = {
-  rules: {
-    userAgent: '*',
-    allow: '/',
-    disallow: ['/admin', '/api', '/login', '/forgot-password', '/reset-password', '/verify-email', '/2fa'],
-  },
-  sitemap: 'http://localhost:3000/sitemap.xml',
-};
-
-export default robots;
+export default function robots(): MetadataRoute.Robots {
+  return {
+    rules: {
+      userAgent: '*',
+      allow: '/',
+      disallow: [
+        '/admin',
+        '/api',
+        '/login',
+        '/forgot-password',
+        '/reset-password',
+        '/verify-email',
+        '/2fa',
+      ],
+    },
+    sitemap: `${clientEnv.NEXT_PUBLIC_APP_URL}/sitemap.xml`,
+  };
+}

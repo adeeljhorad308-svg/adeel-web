@@ -124,7 +124,12 @@ export async function loginWithTwoFactor(
     });
 
     await prisma.user.update({ where: { id: user.id }, data: { lastLoginAt: new Date() } });
-    await recordActivity({ actorId: user.id, action: 'auth.login', ip, metadata: { method: '2fa' } });
+    await recordActivity({
+      actorId: user.id,
+      action: 'auth.login',
+      ip,
+      metadata: { method: '2fa' },
+    });
 
     return { ok: true, data: { verified: true } };
   } catch (error) {
@@ -150,7 +155,12 @@ export async function requestPasswordReset(
     if (user && user.status !== 'SUSPENDED') {
       const { token } = await issueToken(input.email, 'PASSWORD_RESET');
       const email = passwordResetEmail(token);
-      await enqueueEmail({ to: input.email, subject: email.subject, html: email.html, text: email.text });
+      await enqueueEmail({
+        to: input.email,
+        subject: email.subject,
+        html: email.html,
+        text: email.text,
+      });
       await recordActivity({ actorId: user.id, action: 'auth.password.reset_requested', ip });
     }
 
@@ -186,7 +196,11 @@ export async function resetPassword(formData: unknown): Promise<ActionResult<{ r
     await prisma.$transaction(async (tx) => {
       await tx.user.update({
         where: { id: user.id },
-        data: { passwordHash, status: user.status === 'INVITED' ? 'ACTIVE' : user.status, emailVerified: user.emailVerified ?? new Date() },
+        data: {
+          passwordHash,
+          status: user.status === 'INVITED' ? 'ACTIVE' : user.status,
+          emailVerified: user.emailVerified ?? new Date(),
+        },
       });
       await tx.session.deleteMany({ where: { userId: user.id } });
       await recordActivity({ actorId: user.id, action: 'auth.password.reset', ip }, tx);

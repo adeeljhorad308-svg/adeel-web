@@ -21,7 +21,10 @@ export default async function AdminTeamPage(): Promise<React.ReactElement> {
         description="Manage the people shown on your About page."
         action={
           <Link href="/admin/team/new">
-            <Button><Plus className="h-4 w-4" aria-hidden="true" />Add member</Button>
+            <Button>
+              <Plus className="h-4 w-4" aria-hidden="true" />
+              Add member
+            </Button>
           </Link>
         }
       />

@@ -83,9 +83,16 @@ export function LoginForm(): React.ReactElement {
           </p>
         </div>
         {formError && <Alert tone="error">{formError}</Alert>}
-        <form onSubmit={(e) => void onSubmitTwoFactor(e)} className="flex flex-col gap-4" noValidate>
+        <form
+          onSubmit={(e) => void onSubmitTwoFactor(e)}
+          className="flex flex-col gap-4"
+          noValidate
+        >
           <div className="flex flex-col gap-1.5">
-            <label htmlFor="totp" className="text-small font-semibold text-[color:var(--color-text-primary)]">
+            <label
+              htmlFor="totp"
+              className="text-small font-semibold text-[color:var(--color-text-primary)]"
+            >
               Authentication code
             </label>
             <input
@@ -118,7 +125,11 @@ export function LoginForm(): React.ReactElement {
         </p>
       </div>
       {formError && <Alert tone="error">{formError}</Alert>}
-      <form onSubmit={(e) => void handleSubmit(onSubmitCredentials)(e)} className="flex flex-col gap-4" noValidate>
+      <form
+        onSubmit={(e) => void handleSubmit(onSubmitCredentials)(e)}
+        className="flex flex-col gap-4"
+        noValidate
+      >
         <FormField
           label="Email"
           type="email"
@@ -129,10 +140,16 @@ export function LoginForm(): React.ReactElement {
         />
         <div className="flex flex-col gap-1.5">
           <div className="flex items-center justify-between">
-            <label htmlFor="password" className="text-small font-semibold text-[color:var(--color-text-primary)]">
+            <label
+              htmlFor="password"
+              className="text-small font-semibold text-[color:var(--color-text-primary)]"
+            >
               Password
             </label>
-            <Link href="/forgot-password" className="text-small text-[color:var(--color-brand-primary)] hover:underline">
+            <Link
+              href="/forgot-password"
+              className="text-small text-[color:var(--color-brand-primary)] hover:underline"
+            >
               Forgot password?
             </Link>
           </div>
@@ -151,7 +168,11 @@ export function LoginForm(): React.ReactElement {
           )}
         </div>
         <label className="flex items-center gap-2 text-small text-[color:var(--color-text-body)]">
-          <input type="checkbox" {...register('rememberMe')} className="h-4 w-4 rounded border-[color:var(--color-border-default)]" />
+          <input
+            type="checkbox"
+            {...register('rememberMe')}
+            className="h-4 w-4 rounded border-[color:var(--color-border-default)]"
+          />
           Keep me signed in
         </label>
         <Button type="submit" loading={submitting} className="w-full">

@@ -9,7 +9,8 @@ type Status = 'DRAFT' | 'PUBLISHED' | 'ARCHIVED' | 'ACTIVE' | 'INACTIVE';
 
 const styles: Record<Status, string> = {
   DRAFT: 'bg-[color:var(--color-bg-subtle)] text-[color:var(--color-text-muted)]',
-  PUBLISHED: 'bg-[color:var(--color-feedback-success)]/15 text-[color:var(--color-feedback-success)]',
+  PUBLISHED:
+    'bg-[color:var(--color-feedback-success)]/15 text-[color:var(--color-feedback-success)]',
   ARCHIVED: 'bg-[color:var(--color-bg-subtle)] text-[color:var(--color-text-muted)]',
   ACTIVE: 'bg-[color:var(--color-feedback-success)]/15 text-[color:var(--color-feedback-success)]',
   INACTIVE: 'bg-[color:var(--color-bg-subtle)] text-[color:var(--color-text-muted)]',

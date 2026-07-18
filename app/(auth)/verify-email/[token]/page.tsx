@@ -27,7 +27,10 @@ export default async function VerifyEmailPage({
       ) : (
         <Alert tone="error">{result.error.message}</Alert>
       )}
-      <Link href="/login" className="text-small text-[color:var(--color-brand-primary)] hover:underline">
+      <Link
+        href="/login"
+        className="text-small text-[color:var(--color-brand-primary)] hover:underline"
+      >
         Continue to sign in
       </Link>
     </div>

@@ -57,7 +57,10 @@ export function TestimonialsListClient({
           description="Add a real client review to build trust on your site."
           action={
             <Link href="/admin/testimonials/new">
-              <Button><Plus className="h-4 w-4" aria-hidden="true" />Add testimonial</Button>
+              <Button>
+                <Plus className="h-4 w-4" aria-hidden="true" />
+                Add testimonial
+              </Button>
             </Link>
           }
         />
@@ -67,19 +70,35 @@ export function TestimonialsListClient({
           rows={testimonials}
           getRowId={(row) => row.id}
           columns={[
-            { key: 'client', header: 'Client', render: (row) => <span className="font-medium">{row.clientName}</span> },
-            { key: 'company', header: 'Company', render: (row) => row.company ?? '—', hideOnMobile: true },
+            {
+              key: 'client',
+              header: 'Client',
+              render: (row) => <span className="font-medium">{row.clientName}</span>,
+            },
+            {
+              key: 'company',
+              header: 'Company',
+              render: (row) => row.company ?? '—',
+              hideOnMobile: true,
+            },
             {
               key: 'rating',
               header: 'Rating',
               render: (row) => (
                 <span className="flex items-center gap-1">
-                  <Star className="h-3.5 w-3.5 fill-current text-[color:var(--color-feedback-warning)]" aria-hidden="true" />
+                  <Star
+                    className="h-3.5 w-3.5 fill-current text-[color:var(--color-feedback-warning)]"
+                    aria-hidden="true"
+                  />
                   {row.rating}/5
                 </span>
               ),
             },
-            { key: 'status', header: 'Status', render: (row) => <StatusPill status={row.status} /> },
+            {
+              key: 'status',
+              header: 'Status',
+              render: (row) => <StatusPill status={row.status} />,
+            },
           ]}
           rowActions={(row) => (
             <div className="flex justify-end gap-1">

@@ -2,7 +2,13 @@ import 'server-only';
 import { prisma } from '@/lib/db/prisma';
 import { requirePermission } from '@/lib/auth/guards';
 import { parseOrThrow } from '@/lib/validation';
-import { contactFormSchema, contactListSchema, updateContactSchema, addNoteSchema, type ContactListInput } from '@/lib/validation/contact';
+import {
+  contactFormSchema,
+  contactListSchema,
+  updateContactSchema,
+  addNoteSchema,
+  type ContactListInput,
+} from '@/lib/validation/contact';
 import { enforceRateLimit, getClientIp } from '@/lib/security/request';
 import { recordActivity } from '@/lib/logging/activity';
 import { notify } from '@/lib/services/notification-service';
@@ -18,7 +24,9 @@ import { clientEnv } from '@/lib/config/env';
  * the request, notifies Sales/Support, and emails the team. Admin management
  * (list/filter/assign/notes/export) is fully RBAC-gated.
  */
-export async function submitContactForm(input: unknown): Promise<ActionResult<{ submitted: true }>> {
+export async function submitContactForm(
+  input: unknown,
+): Promise<ActionResult<{ submitted: true }>> {
   try {
     const data = parseOrThrow(contactFormSchema, input);
     const ip = await getClientIp();
@@ -46,14 +54,21 @@ export async function submitContactForm(input: unknown): Promise<ActionResult<{ 
     });
 
     await enqueueEmail({
-      to: clientEnv.NEXT_PUBLIC_APP_URL.includes('localhost') ? 'team@adeelit.local' : 'sales@adeelit.example',
+      to: clientEnv.NEXT_PUBLIC_APP_URL.includes('localhost')
+        ? 'team@adeelit.local'
+        : 'sales@adeelit.example',
       subject: `New contact request: ${data.name}`,
       html: `<p><strong>${data.name}</strong> (${data.email}) submitted the contact form.</p><p>${data.message}</p>`,
       text: `${data.name} (${data.email}): ${data.message}`,
       replyTo: data.email,
     });
 
-    await recordActivity({ action: 'contact.submitted', targetType: 'ContactRequest', targetId: request.id, ip });
+    await recordActivity({
+      action: 'contact.submitted',
+      targetType: 'ContactRequest',
+      targetId: request.id,
+      ip,
+    });
 
     return { ok: true, data: { submitted: true } };
   } catch (error) {
@@ -61,17 +76,34 @@ export async function submitContactForm(input: unknown): Promise<ActionResult<{ 
   }
 }
 
-export async function listContactRequests(input: ContactListInput): Promise<ActionResult<Paginated<ContactRequest>>> {
+export async function listContactRequests(
+  input: ContactListInput,
+): Promise<ActionResult<Paginated<ContactRequest>>> {
   try {
     await requirePermission('CONTACTS', 'VIEW');
-    const { page, pageSize, replyStatus, assignedUserId, search } = parseOrThrow(contactListSchema, input);
+    const { page, pageSize, replyStatus, assignedUserId, search } = parseOrThrow(
+      contactListSchema,
+      input,
+    );
     const where: Prisma.ContactRequestWhereInput = {
       ...(replyStatus !== undefined ? { replyStatus } : {}),
       ...(assignedUserId !== undefined ? { assignedUserId } : {}),
-      ...(search ? { OR: [{ name: { contains: search, mode: 'insensitive' } }, { email: { contains: search, mode: 'insensitive' } }] } : {}),
+      ...(search
+        ? {
+            OR: [
+              { name: { contains: search, mode: 'insensitive' } },
+              { email: { contains: search, mode: 'insensitive' } },
+            ],
+          }
+        : {}),
     };
     const [items, total] = await Promise.all([
-      prisma.contactRequest.findMany({ where, orderBy: { createdAt: 'desc' }, skip: (page - 1) * pageSize, take: pageSize }),
+      prisma.contactRequest.findMany({
+        where,
+        orderBy: { createdAt: 'desc' },
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+      }),
       prisma.contactRequest.count({ where }),
     ]);
     return { ok: true, data: { items, total, page, pageSize } };
@@ -91,7 +123,12 @@ export async function updateContactRequest(input: unknown): Promise<ActionResult
         ...(data.assignedUserId !== undefined ? { assignedUserId: data.assignedUserId } : {}),
       },
     });
-    await recordActivity({ actorId: user.id, action: 'contact.update', targetType: 'ContactRequest', targetId: updated.id });
+    await recordActivity({
+      actorId: user.id,
+      action: 'contact.update',
+      targetType: 'ContactRequest',
+      targetId: updated.id,
+    });
     return { ok: true, data: updated };
   } catch (error) {
     return toActionError(error);
@@ -102,7 +139,12 @@ export async function deleteContactRequest(id: string): Promise<ActionResult<{ d
   try {
     const user = await requirePermission('CONTACTS', 'DELETE');
     await prisma.contactRequest.delete({ where: { id } });
-    await recordActivity({ actorId: user.id, action: 'contact.delete', targetType: 'ContactRequest', targetId: id });
+    await recordActivity({
+      actorId: user.id,
+      action: 'contact.delete',
+      targetType: 'ContactRequest',
+      targetId: id,
+    });
     return { ok: true, data: { deleted: true } };
   } catch (error) {
     return toActionError(error);
@@ -123,7 +165,9 @@ export async function addContactNote(input: unknown): Promise<ActionResult<{ add
 }
 
 /** CSV export of contact requests for the current filter (Stage 4 §8). */
-export async function exportContactRequestsCsv(input: ContactListInput): Promise<ActionResult<string>> {
+export async function exportContactRequestsCsv(
+  input: ContactListInput,
+): Promise<ActionResult<string>> {
   try {
     await requirePermission('CONTACTS', 'VIEW');
     const { replyStatus, assignedUserId, search } = parseOrThrow(contactListSchema, input);
@@ -136,7 +180,16 @@ export async function exportContactRequestsCsv(input: ContactListInput): Promise
     const header = 'Name,Email,Company,Phone,Service,Message,Status,Date\n';
     const body = rows
       .map((r) =>
-        [r.name, r.email, r.company ?? '', r.phone ?? '', r.serviceInterest ?? '', r.message.replace(/[\r\n,]/g, ' '), r.replyStatus, r.createdAt.toISOString()]
+        [
+          r.name,
+          r.email,
+          r.company ?? '',
+          r.phone ?? '',
+          r.serviceInterest ?? '',
+          r.message.replace(/[\r\n,]/g, ' '),
+          r.replyStatus,
+          r.createdAt.toISOString(),
+        ]
           .map((v) => `"${String(v).replace(/"/g, '""')}"`)
           .join(','),
       )

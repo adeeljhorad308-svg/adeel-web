@@ -32,7 +32,10 @@ async function nextVersionNumber(tx: Prisma.TransactionClient, postId: string): 
 export async function listPosts(input: PostListInput): Promise<ActionResult<Paginated<Post>>> {
   try {
     await requirePermission('BLOG', 'VIEW');
-    const { page, pageSize, status, categoryId, tagId, search } = parseOrThrow(postListSchema, input);
+    const { page, pageSize, status, categoryId, tagId, search } = parseOrThrow(
+      postListSchema,
+      input,
+    );
 
     const where: Prisma.PostWhereInput = {
       deletedAt: null,
@@ -43,7 +46,12 @@ export async function listPosts(input: PostListInput): Promise<ActionResult<Pagi
     };
 
     const [items, total] = await Promise.all([
-      prisma.post.findMany({ where, orderBy: { createdAt: 'desc' }, skip: (page - 1) * pageSize, take: pageSize }),
+      prisma.post.findMany({
+        where,
+        orderBy: { createdAt: 'desc' },
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+      }),
       prisma.post.count({ where }),
     ]);
 
@@ -120,7 +128,9 @@ export async function upsertPost(input: unknown): Promise<ActionResult<Post>> {
       }
 
       if (data.tagIds.length > 0) {
-        await tx.postTag.createMany({ data: data.tagIds.map((tagId) => ({ postId: post.id, tagId })) });
+        await tx.postTag.createMany({
+          data: data.tagIds.map((tagId) => ({ postId: post.id, tagId })),
+        });
       }
       if (data.relatedPostIds.length > 0) {
         await tx.postRelated.createMany({
@@ -163,7 +173,12 @@ export async function deletePost(id: string): Promise<ActionResult<{ deleted: tr
   try {
     const user = await requirePermission('BLOG', 'DELETE');
     await prisma.post.update({ where: { id }, data: { deletedAt: new Date() } });
-    await recordActivity({ actorId: user.id, action: 'blog.post.delete', targetType: 'Post', targetId: id });
+    await recordActivity({
+      actorId: user.id,
+      action: 'blog.post.delete',
+      targetType: 'Post',
+      targetId: id,
+    });
     return { ok: true, data: { deleted: true } };
   } catch (error) {
     return toActionError(error);
@@ -193,7 +208,11 @@ export async function publishDuePosts(): Promise<{ publishedCount: number }> {
   );
 
   for (const post of due) {
-    await recordActivity({ action: 'blog.post.auto_publish', targetType: 'Post', targetId: post.id });
+    await recordActivity({
+      action: 'blog.post.auto_publish',
+      targetType: 'Post',
+      targetId: post.id,
+    });
   }
 
   return { publishedCount: due.length };

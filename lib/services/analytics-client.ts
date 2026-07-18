@@ -3,7 +3,10 @@
  * injected only after the user has accepted the "analytics" consent category
  * — never unconditionally. IDs come from Settings (group "analytics").
  */
-export function loadAnalytics(ids: { gaId?: string | undefined; gtmId?: string | undefined }): void {
+export function loadAnalytics(ids: {
+  gaId?: string | undefined;
+  gtmId?: string | undefined;
+}): void {
   if (typeof window === 'undefined') return;
 
   if (ids.gaId) {
