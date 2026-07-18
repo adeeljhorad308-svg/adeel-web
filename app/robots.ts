@@ -5,10 +5,18 @@ import { clientEnv } from '@/lib/config/env';
 /**
  * Dynamic robots.txt (Stage 4 §14). Disallows the admin and auth surfaces;
  * includes any extra directives an admin has configured in the SEO Manager.
+ * Gracefully falls back to safe defaults if the database is unavailable during build.
  */
 export default async function robots(): Promise<MetadataRoute.Robots> {
-  const config = await prisma.globalSeoConfig.findFirst();
   const base = clientEnv.NEXT_PUBLIC_APP_URL;
+
+  let config: { robotsExtra?: string | null } | null = null;
+
+  try {
+    config = await prisma.globalSeoConfig.findFirst();
+  } catch {
+    // Database unavailable during build (common in CI). Use safe defaults.
+  }
 
   const robotsConfig: MetadataRoute.Robots = {
     rules: {
