@@ -10,13 +10,18 @@ export default async function robots(): Promise<MetadataRoute.Robots> {
   const config = await prisma.globalSeoConfig.findFirst();
   const base = clientEnv.NEXT_PUBLIC_APP_URL;
 
-  return {
+  const robotsConfig: MetadataRoute.Robots = {
     rules: {
       userAgent: '*',
       allow: '/',
       disallow: ['/admin', '/api', '/login', '/forgot-password', '/reset-password', '/verify-email', '/2fa'],
     },
     sitemap: `${base}/sitemap.xml`,
-    ...(config?.robotsExtra ? { host: base } : {}),
   };
+
+  if (config?.robotsExtra) {
+    robotsConfig.host = base;
+  }
+
+  return robotsConfig;
 }
