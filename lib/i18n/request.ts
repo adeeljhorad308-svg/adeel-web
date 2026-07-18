@@ -17,7 +17,7 @@ const messageCatalogs: Record<Locale, AbstractIntlMessages> = {
   en: enMessages,
 };
 
-export default getRequestConfig(async ({ locale }) => {
+export default getRequestConfig(({ locale }) => {
   const resolved: Locale = (LOCALES as readonly string[]).includes(locale ?? '')
     ? (locale as Locale)
     : DEFAULT_LOCALE;
