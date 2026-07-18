@@ -86,7 +86,7 @@ export const authConfig = {
      * is undefined and the token is passed through as-is (mutated only by
      * `session` below when a revocation is detected).
      */
-    async jwt({ token, user }) {
+    jwt({ token, user }) {
       if (user) {
         if (typeof user.id === 'string') {
           token.sub = user.id;
