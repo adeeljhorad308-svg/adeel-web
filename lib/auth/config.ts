@@ -137,12 +137,13 @@ export const authConfig = {
         };
       }
 
-      // Construct proper user object matching the augmented Session type
+      // Construct proper user object matching the augmented Session type.
+      // Use nullish coalescing to safely handle the (now optional) session.user base.
+      const baseUser = session.user ?? {};
       const user = {
-        ...session.user,
         id: dbUser.id,
-        email: dbUser.email,
-        name: dbUser.name,
+        email: dbUser.email ?? baseUser.email ?? '',
+        name: dbUser.name ?? baseUser.name ?? null,
         role: dbUser.role as Role,
         status: dbUser.status as UserStatus,
       };
