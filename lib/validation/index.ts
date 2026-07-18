@@ -54,5 +54,5 @@ export function parseOrThrow<T extends z.ZodTypeAny>(schema: T, input: unknown):
   if (!result.success) {
     throw new ValidationError('Some fields need your attention.', toFieldErrors(result.error));
   }
-  return result.data;
+  return result.data as z.infer<T>;
 }
