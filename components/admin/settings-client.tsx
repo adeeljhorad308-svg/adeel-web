@@ -41,7 +41,11 @@ export function SettingsClient({
 
   return (
     <div className="flex flex-col gap-6">
-      <div role="tablist" aria-label="Settings sections" className="flex gap-1 border-b border-[color:var(--color-border-default)]">
+      <div
+        role="tablist"
+        aria-label="Settings sections"
+        className="flex gap-1 border-b border-[color:var(--color-border-default)]"
+      >
         {(['company', 'social', 'analytics'] as const).map((t) => (
           <button
             key={t}
@@ -102,14 +106,27 @@ function CompanyForm({ initial }: { initial: CompanySettingsInput }): React.Reac
 }
 
 const SOCIAL_PLATFORM_LABELS: Record<string, string> = {
-  github: 'GitHub', linkedin: 'LinkedIn', facebook: 'Facebook', instagram: 'Instagram',
-  whatsapp: 'WhatsApp', email: 'Email', youtube: 'YouTube', x: 'X', tiktok: 'TikTok',
+  github: 'GitHub',
+  linkedin: 'LinkedIn',
+  facebook: 'Facebook',
+  instagram: 'Instagram',
+  whatsapp: 'WhatsApp',
+  email: 'Email',
+  youtube: 'YouTube',
+  x: 'X',
+  tiktok: 'TikTok',
 };
 
-function SocialForm({ initial }: { initial: { links?: SocialLinksInput['links'] } }): React.ReactElement {
+function SocialForm({
+  initial,
+}: {
+  initial: { links?: SocialLinksInput['links'] };
+}): React.ReactElement {
   const [saved, setSaved] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const platforms = Object.keys(SOCIAL_PLATFORM_LABELS) as SocialLinksInput['links'][number]['platform'][];
+  const platforms = Object.keys(
+    SOCIAL_PLATFORM_LABELS,
+  ) as SocialLinksInput['links'][number]['platform'][];
   const existingByPlatform = new Map((initial.links ?? []).map((l) => [l.platform, l]));
 
   const { register, handleSubmit } = useForm<SocialLinksInput>({

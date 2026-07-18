@@ -127,16 +127,23 @@ export async function updateMedia(input: unknown): Promise<ActionResult<Media>> 
 /** Check whether a media asset is referenced elsewhere before allowing deletion. */
 async function findUsage(mediaId: string): Promise<string[]> {
   const usages: string[] = [];
-  const [projectMedia, projectOg, serviceOg, industryHero, teamPhoto, testimonialPhoto, testimonialLogo] =
-    await Promise.all([
-      prisma.projectMedia.count({ where: { mediaId } }),
-      prisma.project.count({ where: { ogImageId: mediaId } }),
-      prisma.service.count({ where: { ogImageId: mediaId } }),
-      prisma.industry.count({ where: { heroImageId: mediaId } }),
-      prisma.teamMember.count({ where: { photoId: mediaId } }),
-      prisma.testimonial.count({ where: { photoId: mediaId } }),
-      prisma.testimonial.count({ where: { companyLogoId: mediaId } }),
-    ]);
+  const [
+    projectMedia,
+    projectOg,
+    serviceOg,
+    industryHero,
+    teamPhoto,
+    testimonialPhoto,
+    testimonialLogo,
+  ] = await Promise.all([
+    prisma.projectMedia.count({ where: { mediaId } }),
+    prisma.project.count({ where: { ogImageId: mediaId } }),
+    prisma.service.count({ where: { ogImageId: mediaId } }),
+    prisma.industry.count({ where: { heroImageId: mediaId } }),
+    prisma.teamMember.count({ where: { photoId: mediaId } }),
+    prisma.testimonial.count({ where: { photoId: mediaId } }),
+    prisma.testimonial.count({ where: { companyLogoId: mediaId } }),
+  ]);
   if (projectMedia > 0) usages.push('Portfolio projects');
   if (projectOg > 0) usages.push('Project SEO image');
   if (serviceOg > 0) usages.push('Service SEO image');
@@ -161,7 +168,12 @@ export async function deleteMedia(
 
     await deleteAsset(media.publicId);
     await prisma.media.delete({ where: { id } });
-    await recordActivity({ actorId: user.id, action: 'media.delete', targetType: 'Media', targetId: id });
+    await recordActivity({
+      actorId: user.id,
+      action: 'media.delete',
+      targetType: 'Media',
+      targetId: id,
+    });
 
     return { ok: true, data: { deleted: true } };
   } catch (error) {
@@ -176,7 +188,12 @@ export async function createFolder(input: unknown): Promise<ActionResult<{ id: s
     const folder = await prisma.mediaFolder.create({
       data: { name: data.name, parentId: data.parentId ?? null },
     });
-    await recordActivity({ actorId: user.id, action: 'media.folder.create', targetType: 'MediaFolder', targetId: folder.id });
+    await recordActivity({
+      actorId: user.id,
+      action: 'media.folder.create',
+      targetType: 'MediaFolder',
+      targetId: folder.id,
+    });
     return { ok: true, data: { id: folder.id } };
   } catch (error) {
     return toActionError(error);

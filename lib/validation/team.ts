@@ -11,7 +11,17 @@ export type TeamListInput = z.infer<typeof teamListSchema>;
 
 const skillInput = z.object({ label: zNonEmpty('Skill'), order: z.number().int().default(0) });
 const socialLinkInput = z.object({
-  platform: z.enum(['github', 'linkedin', 'facebook', 'instagram', 'whatsapp', 'email', 'youtube', 'x', 'tiktok']),
+  platform: z.enum([
+    'github',
+    'linkedin',
+    'facebook',
+    'instagram',
+    'whatsapp',
+    'email',
+    'youtube',
+    'x',
+    'tiktok',
+  ]),
   url: zOptionalUrl,
   visible: z.boolean().default(true),
 });

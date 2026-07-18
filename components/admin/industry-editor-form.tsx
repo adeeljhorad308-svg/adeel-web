@@ -82,7 +82,11 @@ export function IndustryEditorForm({ industry }: { industry?: Industry }): React
 
   return (
     <div className="flex flex-col gap-6">
-      <form onSubmit={(e) => void handleSubmit(onSubmit)(e)} className="flex flex-col gap-6" noValidate>
+      <form
+        onSubmit={(e) => void handleSubmit(onSubmit)(e)}
+        className="flex flex-col gap-6"
+        noValidate
+      >
         {industry && <input type="hidden" {...register('id')} />}
         {industry && <input type="hidden" {...register('version', { valueAsNumber: true })} />}
 
@@ -91,7 +95,12 @@ export function IndustryEditorForm({ industry }: { industry?: Industry }): React
           <Alert tone="error">
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
               <span>This industry was changed by someone else since you opened it.</span>
-              <Button type="button" variant="secondary" size="sm" onClick={() => window.location.reload()}>
+              <Button
+                type="button"
+                variant="secondary"
+                size="sm"
+                onClick={() => window.location.reload()}
+              >
                 Reload page
               </Button>
             </div>
@@ -113,14 +122,22 @@ export function IndustryEditorForm({ industry }: { industry?: Industry }): React
         </div>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <FormField label="Icon" required hint="A Lucide icon name." error={errors.iconKey?.message} {...register('iconKey')} />
+          <FormField
+            label="Icon"
+            required
+            hint="A Lucide icon name."
+            error={errors.iconKey?.message}
+            {...register('iconKey')}
+          />
           <FormField label="Order" type="number" {...register('order', { valueAsNumber: true })} />
         </div>
 
         <FormField label="Tagline" hint="Shown on the industry tile." {...register('tagline')} />
 
         <fieldset className="flex flex-col gap-3">
-          <legend className="text-small font-semibold text-[color:var(--color-text-primary)]">Challenges</legend>
+          <legend className="text-small font-semibold text-[color:var(--color-text-primary)]">
+            Challenges
+          </legend>
           {challenges.fields.map((field, index) => (
             <div key={field.id} className="flex items-center gap-2">
               <input
@@ -147,7 +164,9 @@ export function IndustryEditorForm({ industry }: { industry?: Industry }): React
             type="button"
             variant="secondary"
             size="sm"
-            onClick={() => challenges.append({ iconKey: '', label: '', order: challenges.fields.length })}
+            onClick={() =>
+              challenges.append({ iconKey: '', label: '', order: challenges.fields.length })
+            }
             className="w-fit"
           >
             <Plus className="h-4 w-4" aria-hidden="true" />
@@ -156,12 +175,20 @@ export function IndustryEditorForm({ industry }: { industry?: Industry }): React
         </fieldset>
 
         <label className="flex items-center gap-2 text-small text-[color:var(--color-text-body)]">
-          <input type="checkbox" {...register('visible')} className="h-4 w-4 rounded border-[color:var(--color-border-default)]" />
+          <input
+            type="checkbox"
+            {...register('visible')}
+            className="h-4 w-4 rounded border-[color:var(--color-border-default)]"
+          />
           Visible on the public site
         </label>
 
         <div className="flex justify-end gap-3 border-t border-[color:var(--color-border-default)] pt-4">
-          <Button type="button" variant="secondary" onClick={() => router.push('/admin/industries')}>
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={() => router.push('/admin/industries')}
+          >
             Cancel
           </Button>
           <Button type="submit" loading={submitting}>

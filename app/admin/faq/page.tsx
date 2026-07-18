@@ -12,7 +12,10 @@ export default async function AdminFaqPage(): Promise<React.ReactElement> {
 
   return (
     <>
-      <PageHeader title="FAQ" description="Manage the frequently asked questions shown on your homepage." />
+      <PageHeader
+        title="FAQ"
+        description="Manage the frequently asked questions shown on your homepage."
+      />
       <FaqManagerClient initialFaqs={result.ok ? result.data : []} />
     </>
   );

@@ -88,7 +88,11 @@ export function PostEditorForm({ post }: { post?: Post }): React.ReactElement {
 
   return (
     <div className="flex flex-col gap-6">
-      <form onSubmit={(e) => void handleSubmit(onSubmit)(e)} className="flex flex-col gap-6" noValidate>
+      <form
+        onSubmit={(e) => void handleSubmit(onSubmit)(e)}
+        className="flex flex-col gap-6"
+        noValidate
+      >
         {post && <input type="hidden" {...register('id')} />}
         {post && <input type="hidden" {...register('version', { valueAsNumber: true })} />}
 
@@ -97,7 +101,12 @@ export function PostEditorForm({ post }: { post?: Post }): React.ReactElement {
           <Alert tone="error">
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
               <span>This article was changed by someone else since you opened it.</span>
-              <Button type="button" variant="secondary" size="sm" onClick={() => window.location.reload()}>
+              <Button
+                type="button"
+                variant="secondary"
+                size="sm"
+                onClick={() => window.location.reload()}
+              >
                 Reload page
               </Button>
             </div>
@@ -118,11 +127,18 @@ export function PostEditorForm({ post }: { post?: Post }): React.ReactElement {
           <FormField label="Slug" required error={errors.slug?.message} {...register('slug')} />
         </div>
 
-        <FormField label="Excerpt" hint="Shown on the blog listing card." {...register('excerpt')} />
+        <FormField
+          label="Excerpt"
+          hint="Shown on the blog listing card."
+          {...register('excerpt')}
+        />
 
         <div className="flex flex-col gap-1.5">
           <div className="flex items-center justify-between">
-            <label htmlFor="contentRich" className="text-small font-semibold text-[color:var(--color-text-primary)]">
+            <label
+              htmlFor="contentRich"
+              className="text-small font-semibold text-[color:var(--color-text-primary)]"
+            >
               Content
             </label>
             <span className="text-small text-[color:var(--color-text-muted)]">
@@ -137,13 +153,18 @@ export function PostEditorForm({ post }: { post?: Post }): React.ReactElement {
             {...register('contentRich')}
           />
           {errors.contentRich && (
-            <p className="text-small font-medium text-[color:var(--color-feedback-error)]">{errors.contentRich.message}</p>
+            <p className="text-small font-medium text-[color:var(--color-feedback-error)]">
+              {errors.contentRich.message}
+            </p>
           )}
         </div>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div className="flex flex-col gap-1.5">
-            <label htmlFor="status" className="text-small font-semibold text-[color:var(--color-text-primary)]">
+            <label
+              htmlFor="status"
+              className="text-small font-semibold text-[color:var(--color-text-primary)]"
+            >
               Status
             </label>
             <select
@@ -168,13 +189,24 @@ export function PostEditorForm({ post }: { post?: Post }): React.ReactElement {
         </div>
 
         <label className="flex items-center gap-2 text-small text-[color:var(--color-text-body)]">
-          <input type="checkbox" {...register('featured')} className="h-4 w-4 rounded border-[color:var(--color-border-default)]" />
+          <input
+            type="checkbox"
+            {...register('featured')}
+            className="h-4 w-4 rounded border-[color:var(--color-border-default)]"
+          />
           Featured article
         </label>
 
         <fieldset className="flex flex-col gap-3 rounded-md border border-[color:var(--color-border-default)] p-4">
-          <legend className="px-1 text-small font-semibold text-[color:var(--color-text-primary)]">SEO</legend>
-          <FormField label="SEO title" hint="Max 70 characters." error={errors.seoTitle?.message} {...register('seoTitle')} />
+          <legend className="px-1 text-small font-semibold text-[color:var(--color-text-primary)]">
+            SEO
+          </legend>
+          <FormField
+            label="SEO title"
+            hint="Max 70 characters."
+            error={errors.seoTitle?.message}
+            {...register('seoTitle')}
+          />
           <FormField
             label="SEO description"
             hint="Max 160 characters."

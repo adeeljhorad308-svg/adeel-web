@@ -76,7 +76,12 @@ export async function saveThemeConfig(input: unknown): Promise<ActionResult<Them
       ? await prisma.themeConfig.update({ where: { id: existing.id }, data: payload })
       : await prisma.themeConfig.create({ data: payload });
 
-    await recordActivity({ actorId: user.id, action: 'theme.update', targetType: 'ThemeConfig', targetId: config.id });
+    await recordActivity({
+      actorId: user.id,
+      action: 'theme.update',
+      targetType: 'ThemeConfig',
+      targetId: config.id,
+    });
 
     return { ok: true, data: config };
   } catch (error) {
@@ -85,7 +90,10 @@ export async function saveThemeConfig(input: unknown): Promise<ActionResult<Them
 }
 
 /** Default token values (Stage 1) used to seed the ThemeConfig row on first run. */
-export function defaultThemeTokens(): { light: Record<string, string>; dark: Record<string, string> } {
+export function defaultThemeTokens(): {
+  light: Record<string, string>;
+  dark: Record<string, string>;
+} {
   const light: Record<string, string> = {};
   const dark: Record<string, string> = {};
   for (const [name, token] of Object.entries(semanticColors)) {

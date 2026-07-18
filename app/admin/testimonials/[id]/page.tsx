@@ -5,7 +5,10 @@ import { getTestimonial } from '@/lib/actions/testimonials-actions';
 import { PageHeader } from '@/components/admin/page-primitives';
 import { TestimonialEditorForm } from '@/components/admin/testimonial-editor-form';
 
-export const metadata: Metadata = { title: 'Edit testimonial', robots: { index: false, follow: false } };
+export const metadata: Metadata = {
+  title: 'Edit testimonial',
+  robots: { index: false, follow: false },
+};
 
 export default async function EditTestimonialPage({
   params,

@@ -22,7 +22,10 @@ export default function AuthLayout({
             {APP_NAME}
           </Link>
         </div>
-        <main id="main-content" className="rounded-lg border border-[color:var(--color-border-default)] bg-[color:var(--color-bg-surface)] p-8 shadow-sm">
+        <main
+          id="main-content"
+          className="rounded-lg border border-[color:var(--color-border-default)] bg-[color:var(--color-bg-surface)] p-8 shadow-sm"
+        >
           {children}
         </main>
       </div>

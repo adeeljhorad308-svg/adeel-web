@@ -115,10 +115,18 @@ describe('navigation menu schema', () => {
 describe('theme config schema', () => {
   it('rejects a malformed hex color', () => {
     const validTokens = {
-      'bg-page': '#f8fafc', 'bg-surface': '#ffffff', 'bg-subtle': '#f1f5f9',
-      'text-primary': '#020617', 'text-body': '#334155', 'text-muted': '#64748b',
-      'border-default': '#e2e8f0', 'brand-primary': '#2563eb', 'brand-hover': '#1d4ed8',
-      'brand-tint': '#eff6ff', 'feedback-success': '#22c55e', 'feedback-warning': '#f59e0b',
+      'bg-page': '#f8fafc',
+      'bg-surface': '#ffffff',
+      'bg-subtle': '#f1f5f9',
+      'text-primary': '#020617',
+      'text-body': '#334155',
+      'text-muted': '#64748b',
+      'border-default': '#e2e8f0',
+      'brand-primary': '#2563eb',
+      'brand-hover': '#1d4ed8',
+      'brand-tint': '#eff6ff',
+      'feedback-success': '#22c55e',
+      'feedback-warning': '#f59e0b',
       'feedback-error': '#ef4444',
     };
     const result = themeConfigSchema.safeParse({

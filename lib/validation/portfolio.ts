@@ -16,8 +16,16 @@ const narrativeInput = z.object({
   bodyRich: z.string().trim().min(1),
   order: z.number().int().default(0),
 });
-const metricInput = z.object({ label: zNonEmpty('Label'), value: zNonEmpty('Value'), order: z.number().int().default(0) });
-const mediaInput = z.object({ mediaId: z.string().cuid(), isCover: z.boolean().default(false), order: z.number().int().default(0) });
+const metricInput = z.object({
+  label: zNonEmpty('Label'),
+  value: zNonEmpty('Value'),
+  order: z.number().int().default(0),
+});
+const mediaInput = z.object({
+  mediaId: z.string().cuid(),
+  isCover: z.boolean().default(false),
+  order: z.number().int().default(0),
+});
 
 export const upsertProjectSchema = z
   .object({

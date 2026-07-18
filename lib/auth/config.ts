@@ -104,8 +104,7 @@ export const authConfig = {
      * `session.user` as unauthenticated.
      */
     async session({ session, token }): Promise<Session> {
-      const dbSessionId =
-        typeof token.dbSessionId === 'string' ? token.dbSessionId : undefined;
+      const dbSessionId = typeof token.dbSessionId === 'string' ? token.dbSessionId : undefined;
 
       if (typeof dbSessionId !== 'string') {
         return {

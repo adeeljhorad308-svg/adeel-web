@@ -49,7 +49,8 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
     const { sniffedMime, category } = validateUpload(buffer, file.type, file.size);
 
-    const finalBuffer = sniffedMime === 'image/svg+xml' ? Buffer.from(sanitizeSvg(buffer.toString('utf8'))) : buffer;
+    const finalBuffer =
+      sniffedMime === 'image/svg+xml' ? Buffer.from(sanitizeSvg(buffer.toString('utf8'))) : buffer;
 
     const resourceType = category === 'video' ? 'video' : category === 'document' ? 'raw' : 'image';
     const result = await uploadBuffer(finalBuffer, folder, resourceType);

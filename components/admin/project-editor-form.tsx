@@ -92,7 +92,11 @@ export function ProjectEditorForm({ project }: { project?: Project }): React.Rea
 
   return (
     <div className="flex flex-col gap-6">
-      <form onSubmit={(e) => void handleSubmit(onSubmit)(e)} className="flex flex-col gap-6" noValidate>
+      <form
+        onSubmit={(e) => void handleSubmit(onSubmit)(e)}
+        className="flex flex-col gap-6"
+        noValidate
+      >
         {project && <input type="hidden" {...register('id')} />}
         {project && <input type="hidden" {...register('version', { valueAsNumber: true })} />}
 
@@ -101,7 +105,12 @@ export function ProjectEditorForm({ project }: { project?: Project }): React.Rea
           <Alert tone="error">
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
               <span>This project was changed by someone else since you opened it.</span>
-              <Button type="button" variant="secondary" size="sm" onClick={() => window.location.reload()}>
+              <Button
+                type="button"
+                variant="secondary"
+                size="sm"
+                onClick={() => window.location.reload()}
+              >
                 Reload page
               </Button>
             </div>
@@ -125,7 +134,10 @@ export function ProjectEditorForm({ project }: { project?: Project }): React.Rea
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           <FormField label="Client name" {...register('clientName')} />
           <div className="flex flex-col gap-1.5">
-            <label htmlFor="status" className="text-small font-semibold text-[color:var(--color-text-primary)]">
+            <label
+              htmlFor="status"
+              className="text-small font-semibold text-[color:var(--color-text-primary)]"
+            >
               Status
             </label>
             <select
@@ -147,12 +159,19 @@ export function ProjectEditorForm({ project }: { project?: Project }): React.Rea
         </div>
 
         <label className="flex items-center gap-2 text-small text-[color:var(--color-text-body)]">
-          <input type="checkbox" {...register('featured')} className="h-4 w-4 rounded border-[color:var(--color-border-default)]" />
+          <input
+            type="checkbox"
+            {...register('featured')}
+            className="h-4 w-4 rounded border-[color:var(--color-border-default)]"
+          />
           Featured project
         </label>
 
         <div className="flex flex-col gap-1.5">
-          <label htmlFor="overview" className="text-small font-semibold text-[color:var(--color-text-primary)]">
+          <label
+            htmlFor="overview"
+            className="text-small font-semibold text-[color:var(--color-text-primary)]"
+          >
             Overview
           </label>
           <textarea
@@ -164,9 +183,14 @@ export function ProjectEditorForm({ project }: { project?: Project }): React.Rea
         </div>
 
         <fieldset className="flex flex-col gap-3">
-          <legend className="text-small font-semibold text-[color:var(--color-text-primary)]">Narrative</legend>
+          <legend className="text-small font-semibold text-[color:var(--color-text-primary)]">
+            Narrative
+          </legend>
           {narratives.fields.map((field, index) => (
-            <div key={field.id} className="flex flex-col gap-2 rounded-md border border-[color:var(--color-border-default)] p-3">
+            <div
+              key={field.id}
+              className="flex flex-col gap-2 rounded-md border border-[color:var(--color-border-default)] p-3"
+            >
               <div className="flex items-center justify-between">
                 <select
                   className="h-9 rounded-md border border-[color:var(--color-border-default)] bg-[color:var(--color-bg-page)] px-2 text-small"

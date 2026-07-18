@@ -5,7 +5,10 @@ import { getTeamMember } from '@/lib/actions/team-actions';
 import { PageHeader } from '@/components/admin/page-primitives';
 import { TeamMemberEditorForm } from '@/components/admin/team-member-editor-form';
 
-export const metadata: Metadata = { title: 'Edit team member', robots: { index: false, follow: false } };
+export const metadata: Metadata = {
+  title: 'Edit team member',
+  robots: { index: false, follow: false },
+};
 
 export default async function EditTeamMemberPage({
   params,

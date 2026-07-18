@@ -5,7 +5,10 @@ import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Plus, Trash2, ArrowUp, ArrowDown } from 'lucide-react';
 import { saveNavigationMenu } from '@/lib/actions/navigation-actions';
-import { saveNavigationMenuSchema, type SaveNavigationMenuInput } from '@/lib/validation/navigation';
+import {
+  saveNavigationMenuSchema,
+  type SaveNavigationMenuInput,
+} from '@/lib/validation/navigation';
 import { Button } from '@/components/ui/button';
 import { Alert } from '@/components/ui/alert';
 import type { NavigationMenu, NavigationItem } from '@prisma/client';
@@ -28,7 +31,13 @@ export function NavigationBuilderClient({
   const [formError, setFormError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
-  const { register, control, handleSubmit, setError, formState: { errors } } = useForm<SaveNavigationMenuInput>({
+  const {
+    register,
+    control,
+    handleSubmit,
+    setError,
+    formState: { errors },
+  } = useForm<SaveNavigationMenuInput>({
     resolver: zodResolver(saveNavigationMenuSchema),
     defaultValues: {
       context,
@@ -53,7 +62,10 @@ export function NavigationBuilderClient({
     setSaved(false);
 
     // Re-sequence order to match the current on-screen list.
-    const withOrder = { ...values, items: values.items.map((item, index) => ({ ...item, order: index })) };
+    const withOrder = {
+      ...values,
+      items: values.items.map((item, index) => ({ ...item, order: index })),
+    };
     const result = await saveNavigationMenu(withOrder);
     setSubmitting(false);
 
@@ -70,7 +82,11 @@ export function NavigationBuilderClient({
   }
 
   return (
-    <form onSubmit={(e) => void handleSubmit(onSubmit)(e)} className="flex flex-col gap-4" noValidate>
+    <form
+      onSubmit={(e) => void handleSubmit(onSubmit)(e)}
+      className="flex flex-col gap-4"
+      noValidate
+    >
       {saved && <Alert tone="success">Menu saved.</Alert>}
       {formError && <Alert tone="error">{formError}</Alert>}
 
@@ -82,14 +98,18 @@ export function NavigationBuilderClient({
           >
             <div className="flex flex-1 flex-col gap-3 sm:flex-row">
               <div className="flex flex-1 flex-col gap-1">
-                <label className="text-small font-medium text-[color:var(--color-text-body)]">Label</label>
+                <label className="text-small font-medium text-[color:var(--color-text-body)]">
+                  Label
+                </label>
                 <input
                   className="h-10 rounded-md border border-[color:var(--color-border-default)] bg-[color:var(--color-bg-page)] px-2 text-small"
                   {...register(`items.${index}.label` as const)}
                 />
               </div>
               <div className="flex flex-1 flex-col gap-1">
-                <label className="text-small font-medium text-[color:var(--color-text-body)]">Link</label>
+                <label className="text-small font-medium text-[color:var(--color-text-body)]">
+                  Link
+                </label>
                 <input
                   className="h-10 rounded-md border border-[color:var(--color-border-default)] bg-[color:var(--color-bg-page)] px-2 text-small"
                   {...register(`items.${index}.href` as const)}
@@ -101,7 +121,9 @@ export function NavigationBuilderClient({
                 )}
               </div>
               <div className="flex flex-col gap-1">
-                <label className="text-small font-medium text-[color:var(--color-text-body)]">Type</label>
+                <label className="text-small font-medium text-[color:var(--color-text-body)]">
+                  Type
+                </label>
                 <select
                   className="h-10 rounded-md border border-[color:var(--color-border-default)] bg-[color:var(--color-bg-page)] px-2 text-small"
                   {...register(`items.${index}.type` as const)}
@@ -146,7 +168,9 @@ export function NavigationBuilderClient({
       <Button
         type="button"
         variant="secondary"
-        onClick={() => append({ label: '', type: 'INTERNAL', href: '/', order: fields.length, visible: true })}
+        onClick={() =>
+          append({ label: '', type: 'INTERNAL', href: '/', order: fields.length, visible: true })
+        }
         className="w-fit"
       >
         <Plus className="h-4 w-4" aria-hidden="true" />

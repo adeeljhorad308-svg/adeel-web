@@ -78,12 +78,19 @@ export function ThemeManagerClient({
   }
 
   return (
-    <form onSubmit={(e) => void handleSubmit(onSubmit)(e)} className="grid grid-cols-1 gap-6 lg:grid-cols-2" noValidate>
+    <form
+      onSubmit={(e) => void handleSubmit(onSubmit)(e)}
+      className="grid grid-cols-1 gap-6 lg:grid-cols-2"
+      noValidate
+    >
       <div className="flex flex-col gap-4">
         {saved && <Alert tone="success">Theme saved. Changes apply site-wide immediately.</Alert>}
         {formError && <Alert tone="error">{formError}</Alert>}
 
-        <div role="tablist" className="flex gap-1 border-b border-[color:var(--color-border-default)]">
+        <div
+          role="tablist"
+          className="flex gap-1 border-b border-[color:var(--color-border-default)]"
+        >
           {(['light', 'dark'] as const).map((m) => (
             <button
               key={m}
@@ -104,12 +111,17 @@ export function ThemeManagerClient({
 
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           {Object.entries(TOKEN_LABELS).map(([key, label]) => {
-            const fieldName = `tokens${mode === 'light' ? 'Light' : 'Dark'}.${key}` as keyof ThemeConfigInput;
-            const errorMessage = (errors.tokensLight as Record<string, { message?: string }> | undefined)?.[key]
-              ?.message;
+            const fieldName =
+              `tokens${mode === 'light' ? 'Light' : 'Dark'}.${key}` as keyof ThemeConfigInput;
+            const errorMessage = (
+              errors.tokensLight as Record<string, { message?: string }> | undefined
+            )?.[key]?.message;
             return (
               <div key={key} className="flex flex-col gap-1">
-                <label htmlFor={fieldName} className="text-small font-medium text-[color:var(--color-text-body)]">
+                <label
+                  htmlFor={fieldName}
+                  className="text-small font-medium text-[color:var(--color-text-body)]"
+                >
                   {label}
                 </label>
                 <div className="flex items-center gap-2">
@@ -126,7 +138,9 @@ export function ThemeManagerClient({
                   />
                 </div>
                 {errorMessage && (
-                  <p className="text-small font-medium text-[color:var(--color-feedback-error)]">{errorMessage}</p>
+                  <p className="text-small font-medium text-[color:var(--color-feedback-error)]">
+                    {errorMessage}
+                  </p>
                 )}
               </div>
             );
@@ -146,12 +160,18 @@ export function ThemeManagerClient({
           borderColor: previewTokens?.['border-default'],
         }}
       >
-        <p className="mb-4 text-small font-semibold uppercase tracking-wide" style={{ color: previewTokens?.['text-muted'] }}>
+        <p
+          className="mb-4 text-small font-semibold uppercase tracking-wide"
+          style={{ color: previewTokens?.['text-muted'] }}
+        >
           Live preview
         </p>
         <div
           className="rounded-lg border p-5"
-          style={{ backgroundColor: previewTokens?.['bg-surface'], borderColor: previewTokens?.['border-default'] }}
+          style={{
+            backgroundColor: previewTokens?.['bg-surface'],
+            borderColor: previewTokens?.['border-default'],
+          }}
         >
           <h3 className="text-lg font-bold" style={{ color: previewTokens?.['text-primary'] }}>
             Sample heading

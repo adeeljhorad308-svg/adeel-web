@@ -21,7 +21,10 @@ export default async function AdminIndustriesPage(): Promise<React.ReactElement>
         description="Manage the sector-specific pages shown on your site."
         action={
           <Link href="/admin/industries/new">
-            <Button><Plus className="h-4 w-4" aria-hidden="true" />Add industry</Button>
+            <Button>
+              <Plus className="h-4 w-4" aria-hidden="true" />
+              Add industry
+            </Button>
           </Link>
         }
       />

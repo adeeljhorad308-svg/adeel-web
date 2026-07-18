@@ -14,7 +14,11 @@ import { deleteProject } from '@/lib/actions/portfolio-actions';
 import type { Project } from '@prisma/client';
 
 /** Portfolio Manager list (Stage 4 §3). */
-export function PortfolioListClient({ initialProjects }: { initialProjects: Project[] }): React.ReactElement {
+export function PortfolioListClient({
+  initialProjects,
+}: {
+  initialProjects: Project[];
+}): React.ReactElement {
   const router = useRouter();
   const [projects, setProjects] = useState(initialProjects);
   const [pendingDelete, setPendingDelete] = useState<Project | null>(null);
@@ -60,7 +64,10 @@ export function PortfolioListClient({ initialProjects }: { initialProjects: Proj
           description="Add your first project to build your portfolio."
           action={
             <Link href="/admin/portfolio/new">
-              <Button><Plus className="h-4 w-4" aria-hidden="true" />Add project</Button>
+              <Button>
+                <Plus className="h-4 w-4" aria-hidden="true" />
+                Add project
+              </Button>
             </Link>
           }
         />
@@ -75,13 +82,27 @@ export function PortfolioListClient({ initialProjects }: { initialProjects: Proj
               header: 'Title',
               render: (row) => (
                 <span className="flex items-center gap-1.5 font-medium">
-                  {row.featured && <Star className="h-3.5 w-3.5 fill-current text-[color:var(--color-feedback-warning)]" aria-hidden="true" />}
+                  {row.featured && (
+                    <Star
+                      className="h-3.5 w-3.5 fill-current text-[color:var(--color-feedback-warning)]"
+                      aria-hidden="true"
+                    />
+                  )}
                   {row.title}
                 </span>
               ),
             },
-            { key: 'client', header: 'Client', render: (row) => row.clientName ?? '—', hideOnMobile: true },
-            { key: 'status', header: 'Status', render: (row) => <StatusPill status={row.status} /> },
+            {
+              key: 'client',
+              header: 'Client',
+              render: (row) => row.clientName ?? '—',
+              hideOnMobile: true,
+            },
+            {
+              key: 'status',
+              header: 'Status',
+              render: (row) => <StatusPill status={row.status} />,
+            },
             { key: 'order', header: 'Order', render: (row) => row.order },
           ]}
           rowActions={(row) => (

@@ -30,7 +30,10 @@ export function AdminSidebar({ nav, mobileOpen, onClose }: AdminSidebarProps): R
 
   const content = (
     <nav aria-label="Admin" className="flex h-full flex-col gap-6 overflow-y-auto p-4">
-      <Link href="/admin" className="px-2 py-1 font-display text-h4 font-bold text-[color:var(--color-text-primary)]">
+      <Link
+        href="/admin"
+        className="px-2 py-1 font-display text-h4 font-bold text-[color:var(--color-text-primary)]"
+      >
         {APP_NAME.split(' ')[0]}
         <span className="text-[color:var(--color-brand-primary)]">.</span>
       </Link>
@@ -40,7 +43,8 @@ export function AdminSidebar({ nav, mobileOpen, onClose }: AdminSidebarProps): R
             {group.label}
           </p>
           {group.items.map((item) => {
-            const active = pathname === item.href || (item.href !== '/admin' && pathname.startsWith(item.href));
+            const active =
+              pathname === item.href || (item.href !== '/admin' && pathname.startsWith(item.href));
             return (
               <Link
                 key={item.href}
@@ -74,11 +78,7 @@ export function AdminSidebar({ nav, mobileOpen, onClose }: AdminSidebarProps): R
       {/* Mobile drawer. */}
       {mobileOpen && (
         <div className="fixed inset-0 z-modal lg:hidden">
-          <div
-            className="absolute inset-0 bg-black/40"
-            onClick={onClose}
-            aria-hidden="true"
-          />
+          <div className="absolute inset-0 bg-black/40" onClick={onClose} aria-hidden="true" />
           <div className="absolute left-0 top-0 h-full w-64 border-r border-[color:var(--color-border-default)] bg-[color:var(--color-bg-surface)]">
             {content}
           </div>

@@ -5,11 +5,21 @@ import { newsletterSubscribeSchema } from '@/lib/validation/newsletter';
 
 describe('contact form validation', () => {
   it('rejects the honeypot field being filled', () => {
-    const result = contactFormSchema.safeParse({ name: 'A', email: 'a@b.com', message: 'hi', website: 'spam' });
+    const result = contactFormSchema.safeParse({
+      name: 'A',
+      email: 'a@b.com',
+      message: 'hi',
+      website: 'spam',
+    });
     expect(result.success).toBe(false);
   });
   it('accepts a valid submission with the honeypot empty', () => {
-    const result = contactFormSchema.safeParse({ name: 'A', email: 'a@b.com', message: 'hi', website: '' });
+    const result = contactFormSchema.safeParse({
+      name: 'A',
+      email: 'a@b.com',
+      message: 'hi',
+      website: '',
+    });
     expect(result.success).toBe(true);
   });
 });

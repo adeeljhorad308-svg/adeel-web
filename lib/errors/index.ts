@@ -135,7 +135,10 @@ export function toErrorEnvelope(error: unknown): { body: ErrorEnvelope; status: 
     status: 500,
     body: {
       ok: false,
-      error: { code: 'SERVER_ERROR', message: 'Something went wrong on our end. Please try again.' },
+      error: {
+        code: 'SERVER_ERROR',
+        message: 'Something went wrong on our end. Please try again.',
+      },
     },
   };
 }

@@ -33,7 +33,11 @@ const ROLE_LABELS: Record<Role, string> = {
   VIEWER: 'Viewer',
 };
 
-export function AdminTopbar({ userName, userRole, onMenuToggle }: AdminTopbarProps): React.ReactElement {
+export function AdminTopbar({
+  userName,
+  userRole,
+  onMenuToggle,
+}: AdminTopbarProps): React.ReactElement {
   const router = useRouter();
   const { resolved, setMode } = useTheme();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -64,7 +68,11 @@ export function AdminTopbar({ userName, userRole, onMenuToggle }: AdminTopbarPro
           className="rounded-md p-2 text-[color:var(--color-text-body)] hover:bg-[color:var(--color-bg-subtle)]"
           aria-label={resolved === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
         >
-          {resolved === 'dark' ? <Sun className="h-5 w-5" aria-hidden="true" /> : <Moon className="h-5 w-5" aria-hidden="true" />}
+          {resolved === 'dark' ? (
+            <Sun className="h-5 w-5" aria-hidden="true" />
+          ) : (
+            <Moon className="h-5 w-5" aria-hidden="true" />
+          )}
         </button>
 
         <NotificationBell />
@@ -87,7 +95,10 @@ export function AdminTopbar({ userName, userRole, onMenuToggle }: AdminTopbarPro
                 {ROLE_LABELS[userRole]}
               </span>
             </span>
-            <ChevronDown className="h-4 w-4 text-[color:var(--color-text-muted)]" aria-hidden="true" />
+            <ChevronDown
+              className="h-4 w-4 text-[color:var(--color-text-muted)]"
+              aria-hidden="true"
+            />
           </button>
 
           {menuOpen && (

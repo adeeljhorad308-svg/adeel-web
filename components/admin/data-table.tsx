@@ -41,7 +41,11 @@ export function DataTable<T>({
           <thead>
             <tr className="border-b border-[color:var(--color-border-default)]">
               {columns.map((col) => (
-                <th key={col.key} scope="col" className="px-4 py-3 font-semibold text-[color:var(--color-text-muted)]">
+                <th
+                  key={col.key}
+                  scope="col"
+                  className="px-4 py-3 font-semibold text-[color:var(--color-text-muted)]"
+                >
                   {col.header}
                 </th>
               ))}
@@ -50,7 +54,10 @@ export function DataTable<T>({
           </thead>
           <tbody>
             {rows.map((row) => (
-              <tr key={getRowId(row)} className="border-b border-[color:var(--color-border-default)] last:border-0">
+              <tr
+                key={getRowId(row)}
+                className="border-b border-[color:var(--color-border-default)] last:border-0"
+              >
                 {columns.map((col) => (
                   <td key={col.key} className="px-4 py-3 text-[color:var(--color-text-body)]">
                     {col.render(row)}
@@ -78,7 +85,9 @@ export function DataTable<T>({
                     <dt className="text-overline font-semibold uppercase text-[color:var(--color-text-muted)]">
                       {col.header}
                     </dt>
-                    <dd className="text-right text-[color:var(--color-text-body)]">{col.render(row)}</dd>
+                    <dd className="text-right text-[color:var(--color-text-body)]">
+                      {col.render(row)}
+                    </dd>
                   </div>
                 ))}
             </dl>

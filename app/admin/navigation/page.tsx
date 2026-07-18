@@ -13,7 +13,10 @@ export default async function AdminNavigationPage(): Promise<React.ReactElement>
 
   return (
     <>
-      <PageHeader title="Navigation" description="Manage the header menu shown across the public site." />
+      <PageHeader
+        title="Navigation"
+        description="Manage the header menu shown across the public site."
+      />
       <NavigationBuilderClient context="HEADER" menu={result.ok ? result.data : null} />
     </>
   );

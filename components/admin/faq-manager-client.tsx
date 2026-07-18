@@ -14,7 +14,11 @@ import type { GlobalFaq } from '@prisma/client';
  * separate create/edit page would add friction without benefit. Reorder is
  * button-driven for full keyboard operability, consistent with Navigation.
  */
-export function FaqManagerClient({ initialFaqs }: { initialFaqs: GlobalFaq[] }): React.ReactElement {
+export function FaqManagerClient({
+  initialFaqs,
+}: {
+  initialFaqs: GlobalFaq[];
+}): React.ReactElement {
   const [faqs, setFaqs] = useState(initialFaqs);
   const [pendingDelete, setPendingDelete] = useState<GlobalFaq | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -33,7 +37,12 @@ export function FaqManagerClient({ initialFaqs }: { initialFaqs: GlobalFaq[] }):
 
   function addFaq(): void {
     startTransition(async () => {
-      const result = await upsertFaq({ question: '', answer: '', order: faqs.length, visible: true });
+      const result = await upsertFaq({
+        question: '',
+        answer: '',
+        order: faqs.length,
+        visible: true,
+      });
       if (result.ok) setFaqs((prev) => [...prev, result.data]);
       else setError(result.error.message);
     });
@@ -70,7 +79,12 @@ export function FaqManagerClient({ initialFaqs }: { initialFaqs: GlobalFaq[] }):
       <EmptyState
         title="No FAQs yet"
         description="Add frequently asked questions to reduce friction before the contact form."
-        action={<Button onClick={addFaq}><Plus className="h-4 w-4" aria-hidden="true" />Add FAQ</Button>}
+        action={
+          <Button onClick={addFaq}>
+            <Plus className="h-4 w-4" aria-hidden="true" />
+            Add FAQ
+          </Button>
+        }
       />
     );
   }
@@ -80,13 +94,26 @@ export function FaqManagerClient({ initialFaqs }: { initialFaqs: GlobalFaq[] }):
       {error && <Alert tone="error">{error}</Alert>}
       <ul className="flex flex-col gap-3">
         {faqs.map((faq, index) => (
-          <li key={faq.id} className="rounded-lg border border-[color:var(--color-border-default)] bg-[color:var(--color-bg-surface)] p-4">
+          <li
+            key={faq.id}
+            className="rounded-lg border border-[color:var(--color-border-default)] bg-[color:var(--color-bg-surface)] p-4"
+          >
             <div className="flex items-start gap-3">
               <div className="flex flex-col gap-1 pt-1">
-                <button onClick={() => move(index, -1)} disabled={index === 0} aria-label="Move up" className="rounded p-1 text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-bg-subtle)] disabled:opacity-30">
+                <button
+                  onClick={() => move(index, -1)}
+                  disabled={index === 0}
+                  aria-label="Move up"
+                  className="rounded p-1 text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-bg-subtle)] disabled:opacity-30"
+                >
                   <ArrowUp className="h-4 w-4" aria-hidden="true" />
                 </button>
-                <button onClick={() => move(index, 1)} disabled={index === faqs.length - 1} aria-label="Move down" className="rounded p-1 text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-bg-subtle)] disabled:opacity-30">
+                <button
+                  onClick={() => move(index, 1)}
+                  disabled={index === faqs.length - 1}
+                  aria-label="Move down"
+                  className="rounded p-1 text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-bg-subtle)] disabled:opacity-30"
+                >
                   <ArrowDown className="h-4 w-4" aria-hidden="true" />
                 </button>
               </div>

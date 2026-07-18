@@ -53,11 +53,16 @@ export function VersionHistoryPanel({
         <div className="border-t border-[color:var(--color-border-default)] p-4">
           {loading && <p className="text-small text-[color:var(--color-text-muted)]">Loading…</p>}
           {!loading && items.length === 0 && (
-            <p className="text-small text-[color:var(--color-text-muted)]">No previous versions yet.</p>
+            <p className="text-small text-[color:var(--color-text-muted)]">
+              No previous versions yet.
+            </p>
           )}
           <ol className="flex flex-col gap-4">
             {items.map((item) => (
-              <li key={item.versionNo} className="border-l-2 border-[color:var(--color-border-default)] pl-3">
+              <li
+                key={item.versionNo}
+                className="border-l-2 border-[color:var(--color-border-default)] pl-3"
+              >
                 <p className="text-small font-semibold text-[color:var(--color-text-primary)]">
                   Version {item.versionNo}
                   <span className="ml-2 font-normal text-[color:var(--color-text-muted)]">
@@ -65,7 +70,9 @@ export function VersionHistoryPanel({
                   </span>
                 </p>
                 {item.diff.length === 0 ? (
-                  <p className="mt-1 text-small text-[color:var(--color-text-muted)]">Initial version</p>
+                  <p className="mt-1 text-small text-[color:var(--color-text-muted)]">
+                    Initial version
+                  </p>
                 ) : (
                   <ul className="mt-1 flex flex-col gap-1">
                     {item.diff.map((d) => (

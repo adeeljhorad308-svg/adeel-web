@@ -48,7 +48,10 @@ export function ForgotPasswordForm(): React.ReactElement {
         <Alert tone="success">
           If an account exists for that address, we&apos;ve sent a link to reset your password.
         </Alert>
-        <Link href="/login" className="text-small text-[color:var(--color-brand-primary)] hover:underline">
+        <Link
+          href="/login"
+          className="text-small text-[color:var(--color-brand-primary)] hover:underline"
+        >
           Back to sign in
         </Link>
       </div>
@@ -65,7 +68,11 @@ export function ForgotPasswordForm(): React.ReactElement {
           Enter your email and we&apos;ll send you a reset link.
         </p>
       </div>
-      <form onSubmit={(e) => void handleSubmit(onSubmit)(e)} className="flex flex-col gap-4" noValidate>
+      <form
+        onSubmit={(e) => void handleSubmit(onSubmit)(e)}
+        className="flex flex-col gap-4"
+        noValidate
+      >
         <FormField
           label="Email"
           type="email"
@@ -77,7 +84,10 @@ export function ForgotPasswordForm(): React.ReactElement {
         <Button type="submit" loading={submitting} className="w-full">
           Send reset link
         </Button>
-        <Link href="/login" className="text-center text-small text-[color:var(--color-brand-primary)] hover:underline">
+        <Link
+          href="/login"
+          className="text-center text-small text-[color:var(--color-brand-primary)] hover:underline"
+        >
           Back to sign in
         </Link>
       </form>
@@ -121,7 +131,11 @@ export function ResetPasswordForm({ token }: { token: string }): React.ReactElem
         </p>
       </div>
       {formError && <Alert tone="error">{formError}</Alert>}
-      <form onSubmit={(e) => void handleSubmit(onSubmit)(e)} className="flex flex-col gap-4" noValidate>
+      <form
+        onSubmit={(e) => void handleSubmit(onSubmit)(e)}
+        className="flex flex-col gap-4"
+        noValidate
+      >
         <input type="hidden" {...register('token')} />
         <FormField
           label="New password"

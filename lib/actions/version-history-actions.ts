@@ -11,6 +11,10 @@ export async function listVersionHistory(entity: VersionedEntity, entityId: stri
   return _listVersionHistory(entity, entityId);
 }
 
-export async function getVersionSnapshot(entity: VersionedEntity, entityId: string, versionNo: number) {
+export async function getVersionSnapshot(
+  entity: VersionedEntity,
+  entityId: string,
+  versionNo: number,
+) {
   return _getVersionSnapshot(entity, entityId, versionNo);
 }

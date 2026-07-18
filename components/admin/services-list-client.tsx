@@ -17,7 +17,11 @@ import type { Service } from '@prisma/client';
  * per-row edit/delete actions. Delete goes through ConfirmDialog rather than a
  * native confirm(), and calls the real `deleteService` Server Action.
  */
-export function ServicesListClient({ initialServices }: { initialServices: Service[] }): React.ReactElement {
+export function ServicesListClient({
+  initialServices,
+}: {
+  initialServices: Service[];
+}): React.ReactElement {
   const router = useRouter();
   const [services, setServices] = useState(initialServices);
   const [pendingDelete, setPendingDelete] = useState<Service | null>(null);
@@ -59,8 +63,17 @@ export function ServicesListClient({ initialServices }: { initialServices: Servi
         rows={services}
         getRowId={(row) => row.id}
         columns={[
-          { key: 'name', header: 'Name', render: (row) => <span className="font-medium">{row.name}</span> },
-          { key: 'benefit', header: 'Benefit', render: (row) => row.shortBenefit, hideOnMobile: true },
+          {
+            key: 'name',
+            header: 'Name',
+            render: (row) => <span className="font-medium">{row.name}</span>,
+          },
+          {
+            key: 'benefit',
+            header: 'Benefit',
+            render: (row) => row.shortBenefit,
+            hideOnMobile: true,
+          },
           {
             key: 'status',
             header: 'Visibility',

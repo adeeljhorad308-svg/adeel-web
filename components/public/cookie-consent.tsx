@@ -53,17 +53,34 @@ export function CookieConsent({
   if (!visible) return null;
 
   return (
-    <div role="dialog" aria-label="Cookie consent" className="fixed inset-x-0 bottom-0 z-toast border-t border-[color:var(--color-border-default)] bg-[color:var(--color-bg-surface)] p-4 shadow-lg">
+    <div
+      role="dialog"
+      aria-label="Cookie consent"
+      className="fixed inset-x-0 bottom-0 z-toast border-t border-[color:var(--color-border-default)] bg-[color:var(--color-bg-surface)] p-4 shadow-lg"
+    >
       <div className="mx-auto flex max-w-content-xl flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
         <p className="text-small text-[color:var(--color-text-body)]">
           We use cookies to improve your experience and understand site usage. See our{' '}
-          <a href="/legal/cookies" className="text-[color:var(--color-brand-primary)] hover:underline">Cookie Policy</a>.
+          <a
+            href="/legal/cookies"
+            className="text-[color:var(--color-brand-primary)] hover:underline"
+          >
+            Cookie Policy
+          </a>
+          .
         </p>
         <div className="flex shrink-0 gap-2">
-          <Button variant="secondary" size="sm" onClick={() => accept({ functional: true, analytics: false, marketing: false })}>
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={() => accept({ functional: true, analytics: false, marketing: false })}
+          >
             Essential only
           </Button>
-          <Button size="sm" onClick={() => accept({ functional: true, analytics: true, marketing: true })}>
+          <Button
+            size="sm"
+            onClick={() => accept({ functional: true, analytics: true, marketing: true })}
+          >
             Accept all
           </Button>
         </div>

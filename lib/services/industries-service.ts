@@ -2,7 +2,11 @@ import 'server-only';
 import { prisma } from '@/lib/db/prisma';
 import { requirePermission } from '@/lib/auth/guards';
 import { parseOrThrow } from '@/lib/validation';
-import { industryListSchema, upsertIndustrySchema, type IndustryListInput } from '@/lib/validation/industries';
+import {
+  industryListSchema,
+  upsertIndustrySchema,
+  type IndustryListInput,
+} from '@/lib/validation/industries';
 import { recordActivity } from '@/lib/logging/activity';
 import { toActionError } from '@/lib/services/action-result';
 import { ConflictError } from '@/lib/errors';
@@ -16,7 +20,10 @@ import type { Industry, Prisma } from '@prisma/client';
  * mappings, FAQs).
  */
 
-async function nextVersionNumber(tx: Prisma.TransactionClient, industryId: string): Promise<number> {
+async function nextVersionNumber(
+  tx: Prisma.TransactionClient,
+  industryId: string,
+): Promise<number> {
   const last = await tx.contentVersion.findFirst({
     where: { entity: 'INDUSTRY', entityId: industryId },
     orderBy: { versionNo: 'desc' },
@@ -25,7 +32,9 @@ async function nextVersionNumber(tx: Prisma.TransactionClient, industryId: strin
   return (last?.versionNo ?? 0) + 1;
 }
 
-export async function listIndustries(input: IndustryListInput): Promise<ActionResult<Paginated<Industry>>> {
+export async function listIndustries(
+  input: IndustryListInput,
+): Promise<ActionResult<Paginated<Industry>>> {
   try {
     await requirePermission('INDUSTRIES', 'VIEW');
     const { page, pageSize, visible, search } = parseOrThrow(industryListSchema, input);
@@ -37,7 +46,12 @@ export async function listIndustries(input: IndustryListInput): Promise<ActionRe
     };
 
     const [items, total] = await Promise.all([
-      prisma.industry.findMany({ where, orderBy: { order: 'asc' }, skip: (page - 1) * pageSize, take: pageSize }),
+      prisma.industry.findMany({
+        where,
+        orderBy: { order: 'asc' },
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+      }),
       prisma.industry.count({ where }),
     ]);
 
@@ -114,7 +128,11 @@ export async function upsertIndustry(input: unknown): Promise<ActionResult<Indus
       }
       if (data.solutionMappings.length > 0) {
         await tx.industrySolutionMapping.createMany({
-          data: data.solutionMappings.map((m) => ({ ...m, label: m.label ?? null, industryId: industry.id })),
+          data: data.solutionMappings.map((m) => ({
+            ...m,
+            label: m.label ?? null,
+            industryId: industry.id,
+          })),
         });
       }
       if (data.faqs.length > 0) {
@@ -156,8 +174,16 @@ export async function upsertIndustry(input: unknown): Promise<ActionResult<Indus
 export async function deleteIndustry(id: string): Promise<ActionResult<{ deleted: true }>> {
   try {
     const user = await requirePermission('INDUSTRIES', 'DELETE');
-    await prisma.industry.update({ where: { id }, data: { deletedAt: new Date(), visible: false } });
-    await recordActivity({ actorId: user.id, action: 'industries.delete', targetType: 'Industry', targetId: id });
+    await prisma.industry.update({
+      where: { id },
+      data: { deletedAt: new Date(), visible: false },
+    });
+    await recordActivity({
+      actorId: user.id,
+      action: 'industries.delete',
+      targetType: 'Industry',
+      targetId: id,
+    });
     return { ok: true, data: { deleted: true } };
   } catch (error) {
     return toActionError(error);

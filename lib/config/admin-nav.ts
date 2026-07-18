@@ -56,7 +56,12 @@ export const ADMIN_NAV: readonly AdminNavGroup[] = [
     label: 'System',
     items: [
       { label: 'Users & Roles', href: '/admin/users', icon: 'ShieldCheck', module: 'USERS' },
-      { label: 'Notifications', href: '/admin/notifications', icon: 'Bell', module: 'NOTIFICATIONS' },
+      {
+        label: 'Notifications',
+        href: '/admin/notifications',
+        icon: 'Bell',
+        module: 'NOTIFICATIONS',
+      },
       { label: 'Activity', href: '/admin/activity', icon: 'ScrollText', module: 'ACTIVITY' },
       { label: 'Settings', href: '/admin/settings', icon: 'Settings', module: 'SETTINGS' },
     ],

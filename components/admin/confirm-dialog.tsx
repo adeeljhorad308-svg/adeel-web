@@ -53,10 +53,16 @@ export function ConfirmDialog({
         tabIndex={-1}
         className="relative w-full max-w-sm rounded-lg border border-[color:var(--color-border-default)] bg-[color:var(--color-bg-surface)] p-6 shadow-lg"
       >
-        <h2 id="confirm-title" className="font-display text-h4 font-bold text-[color:var(--color-text-primary)]">
+        <h2
+          id="confirm-title"
+          className="font-display text-h4 font-bold text-[color:var(--color-text-primary)]"
+        >
           {title}
         </h2>
-        <p id="confirm-description" className="mt-2 text-small text-[color:var(--color-text-muted)]">
+        <p
+          id="confirm-description"
+          className="mt-2 text-small text-[color:var(--color-text-muted)]"
+        >
           {description}
         </p>
         <div className="mt-6 flex justify-end gap-3">

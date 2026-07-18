@@ -2,7 +2,12 @@ import 'server-only';
 import { prisma } from '@/lib/db/prisma';
 import { requirePermission } from '@/lib/auth/guards';
 import { parseOrThrow } from '@/lib/validation';
-import { leadListSchema, upsertLeadSchema, moveLeadStageSchema, type LeadListInput } from '@/lib/validation/crm';
+import {
+  leadListSchema,
+  upsertLeadSchema,
+  moveLeadStageSchema,
+  type LeadListInput,
+} from '@/lib/validation/crm';
 import { recordActivity } from '@/lib/logging/activity';
 import { notify } from '@/lib/services/notification-service';
 import { toActionError } from '@/lib/services/action-result';
@@ -14,15 +19,30 @@ import type { Lead, Prisma } from '@prisma/client';
 export async function listLeads(input: LeadListInput): Promise<ActionResult<Paginated<Lead>>> {
   try {
     await requirePermission('CRM', 'VIEW');
-    const { page, pageSize, status, priority, assignedUserId, search } = parseOrThrow(leadListSchema, input);
+    const { page, pageSize, status, priority, assignedUserId, search } = parseOrThrow(
+      leadListSchema,
+      input,
+    );
     const where: Prisma.LeadWhereInput = {
       ...(status !== undefined ? { status } : {}),
       ...(priority !== undefined ? { priority } : {}),
       ...(assignedUserId !== undefined ? { assignedUserId } : {}),
-      ...(search ? { OR: [{ name: { contains: search, mode: 'insensitive' } }, { company: { contains: search, mode: 'insensitive' } }] } : {}),
+      ...(search
+        ? {
+            OR: [
+              { name: { contains: search, mode: 'insensitive' } },
+              { company: { contains: search, mode: 'insensitive' } },
+            ],
+          }
+        : {}),
     };
     const [items, total] = await Promise.all([
-      prisma.lead.findMany({ where, orderBy: [{ priority: 'desc' }, { order: 'asc' }], skip: (page - 1) * pageSize, take: pageSize }),
+      prisma.lead.findMany({
+        where,
+        orderBy: [{ priority: 'desc' }, { order: 'asc' }],
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+      }),
       prisma.lead.count({ where }),
     ]);
     return { ok: true, data: { items, total, page, pageSize } };
@@ -57,9 +77,19 @@ export async function upsertLead(input: unknown): Promise<ActionResult<Lead>> {
       : await prisma.lead.create({ data: payload });
 
     if (!data.id) {
-      await notify({ type: 'LEAD', title: `New lead: ${data.name}`, link: '/admin/crm', targetRole: 'SALES' });
+      await notify({
+        type: 'LEAD',
+        title: `New lead: ${data.name}`,
+        link: '/admin/crm',
+        targetRole: 'SALES',
+      });
     }
-    await recordActivity({ actorId: user.id, action: data.id ? 'crm.lead.update' : 'crm.lead.create', targetType: 'Lead', targetId: lead.id });
+    await recordActivity({
+      actorId: user.id,
+      action: data.id ? 'crm.lead.update' : 'crm.lead.create',
+      targetType: 'Lead',
+      targetId: lead.id,
+    });
     return { ok: true, data: lead };
   } catch (error) {
     return toActionError(error);
@@ -72,9 +102,18 @@ export async function moveLeadStage(input: unknown): Promise<ActionResult<Lead>>
     const data = parseOrThrow(moveLeadStageSchema, input);
     const lead = await prisma.lead.update({
       where: { id: data.id },
-      data: { status: data.status, ...(data.lostReason !== undefined ? { lostReason: data.lostReason } : {}) },
+      data: {
+        status: data.status,
+        ...(data.lostReason !== undefined ? { lostReason: data.lostReason } : {}),
+      },
     });
-    await recordActivity({ actorId: user.id, action: 'crm.lead.stage_change', targetType: 'Lead', targetId: lead.id, metadata: { status: data.status } });
+    await recordActivity({
+      actorId: user.id,
+      action: 'crm.lead.stage_change',
+      targetType: 'Lead',
+      targetId: lead.id,
+      metadata: { status: data.status },
+    });
     return { ok: true, data: lead };
   } catch (error) {
     return toActionError(error);
@@ -85,14 +124,22 @@ export async function deleteLead(id: string): Promise<ActionResult<{ deleted: tr
   try {
     const user = await requirePermission('CRM', 'DELETE');
     await prisma.lead.delete({ where: { id } });
-    await recordActivity({ actorId: user.id, action: 'crm.lead.delete', targetType: 'Lead', targetId: id });
+    await recordActivity({
+      actorId: user.id,
+      action: 'crm.lead.delete',
+      targetType: 'Lead',
+      targetId: id,
+    });
     return { ok: true, data: { deleted: true } };
   } catch (error) {
     return toActionError(error);
   }
 }
 
-export async function addLeadNote(leadId: string, body: string): Promise<ActionResult<{ added: true }>> {
+export async function addLeadNote(
+  leadId: string,
+  body: string,
+): Promise<ActionResult<{ added: true }>> {
   try {
     const user = await requirePermission('CRM', 'EDIT');
     await prisma.note.create({ data: { body, authorId: user.id, leadId } });
@@ -120,8 +167,16 @@ export async function convertContactToLead(contactId: string): Promise<ActionRes
         priority: 'MEDIUM',
       },
     });
-    await prisma.contactRequest.update({ where: { id: contactId }, data: { replyStatus: 'REPLIED' } });
-    await recordActivity({ actorId: user.id, action: 'crm.lead.convert_from_contact', targetType: 'Lead', targetId: lead.id });
+    await prisma.contactRequest.update({
+      where: { id: contactId },
+      data: { replyStatus: 'REPLIED' },
+    });
+    await recordActivity({
+      actorId: user.id,
+      action: 'crm.lead.convert_from_contact',
+      targetType: 'Lead',
+      targetId: lead.id,
+    });
     return { ok: true, data: lead };
   } catch (error) {
     return toActionError(error);

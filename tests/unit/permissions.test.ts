@@ -1,8 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import {
-  defaultPermissionRows,
-  hasDefaultPermission,
-} from '@/lib/auth/permissions';
+import { defaultPermissionRows, hasDefaultPermission } from '@/lib/auth/permissions';
 
 /**
  * RBAC matrix tests (Stage 5 §21: explicit role-permission tests). These lock in

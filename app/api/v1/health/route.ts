@@ -11,10 +11,9 @@ import { logger } from '@/lib/logging/logger';
 export async function GET(): Promise<NextResponse> {
   try {
     await prisma.$queryRaw`SELECT 1`;
-    return NextResponse.json(
-      success({ status: 'ok', timestamp: new Date().toISOString() }),
-      { status: 200 },
-    );
+    return NextResponse.json(success({ status: 'ok', timestamp: new Date().toISOString() }), {
+      status: 200,
+    });
   } catch (error) {
     logger.error({ err: error }, 'Health check failed');
     const { body, status } = toErrorEnvelope(error);

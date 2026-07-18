@@ -13,8 +13,7 @@ const toneStyles: Record<Tone, string> = {
     'border-[color:var(--color-feedback-success)] bg-[color:var(--color-feedback-success)]/10 text-[color:var(--color-text-primary)]',
   error:
     'border-[color:var(--color-feedback-error)] bg-[color:var(--color-feedback-error)]/10 text-[color:var(--color-text-primary)]',
-  info:
-    'border-[color:var(--color-border-default)] bg-[color:var(--color-bg-subtle)] text-[color:var(--color-text-primary)]',
+  info: 'border-[color:var(--color-border-default)] bg-[color:var(--color-bg-subtle)] text-[color:var(--color-text-primary)]',
 };
 
 export interface AlertProps {

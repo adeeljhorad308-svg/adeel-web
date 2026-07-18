@@ -22,7 +22,15 @@ export const companySettingsSchema = z.object({
 export type CompanySettingsInput = z.infer<typeof companySettingsSchema>;
 
 const SOCIAL_PLATFORMS = [
-  'github', 'linkedin', 'facebook', 'instagram', 'whatsapp', 'email', 'youtube', 'x', 'tiktok',
+  'github',
+  'linkedin',
+  'facebook',
+  'instagram',
+  'whatsapp',
+  'email',
+  'youtube',
+  'x',
+  'tiktok',
 ] as const;
 
 export const socialLinksSchema = z.object({

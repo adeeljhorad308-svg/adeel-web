@@ -14,7 +14,11 @@ import { deleteIndustry } from '@/lib/actions/industries-actions';
 import type { Industry } from '@prisma/client';
 
 /** Industries list (Stage 4 §4 pattern, Stage 3 Page 3). */
-export function IndustriesListClient({ initialIndustries }: { initialIndustries: Industry[] }): React.ReactElement {
+export function IndustriesListClient({
+  initialIndustries,
+}: {
+  initialIndustries: Industry[];
+}): React.ReactElement {
   const router = useRouter();
   const [industries, setIndustries] = useState(initialIndustries);
   const [pendingDelete, setPendingDelete] = useState<Industry | null>(null);
@@ -64,8 +68,17 @@ export function IndustriesListClient({ initialIndustries }: { initialIndustries:
           rows={industries}
           getRowId={(row) => row.id}
           columns={[
-            { key: 'name', header: 'Name', render: (row) => <span className="font-medium">{row.name}</span> },
-            { key: 'tagline', header: 'Tagline', render: (row) => row.tagline ?? '—', hideOnMobile: true },
+            {
+              key: 'name',
+              header: 'Name',
+              render: (row) => <span className="font-medium">{row.name}</span>,
+            },
+            {
+              key: 'tagline',
+              header: 'Tagline',
+              render: (row) => row.tagline ?? '—',
+              hideOnMobile: true,
+            },
             {
               key: 'status',
               header: 'Visibility',

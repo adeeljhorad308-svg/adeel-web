@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { generateSecret, verifyToken, encryptSecret, decryptSecret, buildOtpAuthUri } from '@/lib/auth/totp';
+import {
+  generateSecret,
+  verifyToken,
+  encryptSecret,
+  decryptSecret,
+  buildOtpAuthUri,
+} from '@/lib/auth/totp';
 import { loginSchema, resetPasswordSchema } from '@/lib/validation/auth';
 
 /**
@@ -10,7 +16,6 @@ import { loginSchema, resetPasswordSchema } from '@/lib/validation/auth';
  */
 describe('TOTP two-factor', () => {
   it('round-trips secret encryption', () => {
-    process.env.NEXTAUTH_SECRET = 'a'.repeat(32);
     const secret = generateSecret();
     const encrypted = encryptSecret(secret);
     expect(encrypted).not.toBe(secret);

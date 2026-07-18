@@ -50,7 +50,9 @@ export async function getCompanySettings(): Promise<ActionResult<Record<string, 
   }
 }
 
-export async function updateCompanySettings(input: unknown): Promise<ActionResult<{ saved: true }>> {
+export async function updateCompanySettings(
+  input: unknown,
+): Promise<ActionResult<{ saved: true }>> {
   try {
     const user = await requirePermission('SETTINGS', 'EDIT');
     const data = parseOrThrow(companySettingsSchema, input);
@@ -90,7 +92,9 @@ export async function getAnalyticsSettings(): Promise<ActionResult<Record<string
   }
 }
 
-export async function updateAnalyticsSettings(input: unknown): Promise<ActionResult<{ saved: true }>> {
+export async function updateAnalyticsSettings(
+  input: unknown,
+): Promise<ActionResult<{ saved: true }>> {
   try {
     const user = await requirePermission('SETTINGS', 'EDIT');
     const data = parseOrThrow(analyticsSettingsSchema, input);

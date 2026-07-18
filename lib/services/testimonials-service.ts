@@ -33,7 +33,12 @@ export async function listTestimonials(
     };
 
     const [items, total] = await Promise.all([
-      prisma.testimonial.findMany({ where, orderBy: { order: 'asc' }, skip: (page - 1) * pageSize, take: pageSize }),
+      prisma.testimonial.findMany({
+        where,
+        orderBy: { order: 'asc' },
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+      }),
       prisma.testimonial.count({ where }),
     ]);
 
@@ -107,7 +112,10 @@ export async function upsertTestimonial(input: unknown): Promise<ActionResult<Te
 export async function deleteTestimonial(id: string): Promise<ActionResult<{ deleted: true }>> {
   try {
     const user = await requirePermission('TESTIMONIALS', 'DELETE');
-    await prisma.testimonial.update({ where: { id }, data: { deletedAt: new Date(), status: 'ARCHIVED' } });
+    await prisma.testimonial.update({
+      where: { id },
+      data: { deletedAt: new Date(), status: 'ARCHIVED' },
+    });
     await recordActivity({
       actorId: user.id,
       action: 'testimonials.delete',
