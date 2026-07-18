@@ -58,6 +58,9 @@ function fromBase32(input: string): Buffer {
 // --- Secret encryption at rest (AES-256-GCM) ---
 
 function encryptionKey(): Buffer {
+  if (!serverEnv.NEXTAUTH_SECRET) {
+    throw new Error('NEXTAUTH_SECRET is required for TOTP secret encryption but is not configured.');
+  }
   return createHash('sha256').update(serverEnv.NEXTAUTH_SECRET).digest();
 }
 
