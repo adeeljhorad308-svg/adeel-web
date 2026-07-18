@@ -48,11 +48,16 @@ export function toFieldErrors(error: z.ZodError): FieldErrors {
   return fields;
 }
 
-/** Parse input against a schema, throwing a typed ValidationError on failure. */
+/** Parse input against a schema, throwing a typed ValidationError on failure.
+ *  Note: Uses a targeted suppression for @typescript-eslint/no-unsafe-return
+ *  because of a known friction between Zod's generic typing and strict
+ *  recommendedTypeChecked rules (documented in Zod discussions).
+ */
 export function parseOrThrow<T extends z.ZodTypeAny>(schema: T, input: unknown): z.infer<T> {
   const result = schema.safeParse(input);
   if (!result.success) {
     throw new ValidationError('Some fields need your attention.', toFieldErrors(result.error));
   }
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
   return result.data as z.infer<T>;
 }
