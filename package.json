@@ -26,6 +26,7 @@
     "prisma:studio": "prisma studio",
     "db:seed": "tsx prisma/seed.ts",
     "trigger:dev": "trigger.dev@latest dev",
+    "postinstall": "prisma generate",
     "prepare": "husky || true",
     "validate": "npm run typecheck && npm run lint && npm run format:check && npm run test"
   },
