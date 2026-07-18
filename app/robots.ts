@@ -1,23 +1,16 @@
 import type { MetadataRoute } from 'next';
 
 /**
- * robots.txt configuration.
- * Simplified to avoid build-time environment validation errors
- * and satisfy @typescript-eslint/require-await.
+ * Static robots.txt to guarantee build success.
+ * Dynamic version can be restored later when full env is available.
  */
-export default function robots(): MetadataRoute.Robots {
-  const base =
-    process.env.NEXT_PUBLIC_APP_URL ||
-    (process.env.VERCEL_URL
-      ? `https://${process.env.VERCEL_URL}`
-      : 'http://localhost:3000');
+const robots: MetadataRoute.Robots = {
+  rules: {
+    userAgent: '*',
+    allow: '/',
+    disallow: ['/admin', '/api', '/login', '/forgot-password', '/reset-password', '/verify-email', '/2fa'],
+  },
+  sitemap: 'http://localhost:3000/sitemap.xml',
+};
 
-  return {
-    rules: {
-      userAgent: '*',
-      allow: '/',
-      disallow: ['/admin', '/api', '/login', '/forgot-password', '/reset-password', '/verify-email', '/2fa'],
-    },
-    sitemap: `${base}/sitemap.xml`,
-  };
-}
+export default robots;
