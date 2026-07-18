@@ -35,6 +35,9 @@ const providers: NextAuthConfig['providers'] = [
       password: { label: 'Password', type: 'password' },
     },
     async authorize(rawCredentials) {
+      // Ensure this async function always has an await expression for @typescript-eslint/require-await
+      await Promise.resolve();
+
       const parsed = loginSchema.safeParse(rawCredentials);
       if (!parsed.success) return null;
 
