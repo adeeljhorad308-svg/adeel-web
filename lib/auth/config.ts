@@ -88,35 +88,41 @@ export const authConfig = {
      */
     async jwt({ token, user }) {
       if (user) {
-    if (typeof user.id === "string") {
-        token.sub = user.id;
-    }
-
-    if (typeof user.dbSessionId === "string") {
-        token.dbSessionId = user.dbSessionId;
-    }
-}
+        if (typeof user.id === 'string') {
+          token.sub = user.id;
+        }
+        if (typeof user.dbSessionId === 'string') {
+          token.dbSessionId = user.dbSessionId;
+        }
+      }
       return token;
     },
     /**
      * Look up the DB-backed session on every request. If it's missing (revoked
      * via logout-all-devices or expired and swept), invalidate the session by
-     * returning an empty session object — `getCurrentUser()` treats a missing
-     * `session.user.id` as unauthenticated.
+     * returning a session with undefined user — `getCurrentUser()` treats a missing
+     * `session.user` as unauthenticated.
      */
     async session({ session, token }): Promise<Session> {
       const dbSessionId =
-  typeof token.dbSessionId === "string"
-    ? token.dbSessionId
-    : undefined;
+        typeof token.dbSessionId === 'string' ? token.dbSessionId : undefined;
+
       if (typeof dbSessionId !== 'string') {
-        return { ...session, user: undefined as unknown as Session['user'], expires: session.expires };
+        return {
+          ...session,
+          user: undefined,
+          expires: session.expires,
+        };
       }
 
       const sessionId = dbSessionId;
       const dbSession = await prisma.session.findUnique({ where: { id: sessionId } });
       if (!dbSession || dbSession.expires < new Date()) {
-        return { ...session, user: undefined as unknown as Session['user'], expires: session.expires };
+        return {
+          ...session,
+          user: undefined,
+          expires: session.expires,
+        };
       }
 
       const dbUser = await prisma.user.findUnique({
@@ -124,16 +130,28 @@ export const authConfig = {
         select: { id: true, email: true, name: true, role: true, status: true },
       });
       if (!dbUser || dbUser.status === 'SUSPENDED') {
-        return { ...session, user: undefined as unknown as Session['user'], expires: session.expires };
+        return {
+          ...session,
+          user: undefined,
+          expires: session.expires,
+        };
       }
 
-      session.user.id = dbUser.id;
-      session.user.email = dbUser.email;
-      session.user.name = dbUser.name;
-      session.user.role = dbUser.role as Role;
-      session.user.status = dbUser.status as UserStatus;
-      session.dbSessionId = sessionId;
-      return session;
+      // Construct proper user object matching the augmented Session type
+      const user = {
+        ...session.user,
+        id: dbUser.id,
+        email: dbUser.email,
+        name: dbUser.name,
+        role: dbUser.role as Role,
+        status: dbUser.status as UserStatus,
+      };
+
+      return {
+        ...session,
+        user,
+        dbSessionId: sessionId,
+      };
     },
   },
   trustHost: true,
